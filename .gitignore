@@ -1,0 +1,45 @@
+
+# Ambientes virtuais
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Ambiente e configurações
+.env
+.env.*
+!.env.example
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Arquivos gerados e temporários
+outputs/
+tmp/
+*.log
+
+# Modelos treinados
+models/*
+!models/.gitkeep
+*.pkl
+*.pickle
+*.joblib
+
+# Banco de dados local
+*.db
+*.sqlite
+*.sqlite3
+
+# Testes e cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editores e sistema operacional
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
