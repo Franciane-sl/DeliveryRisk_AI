@@ -4,15 +4,17 @@
 
 O **DeliveryRisk AI** é um projeto de Machine Learning que tem como objetivo desenvolver um sistema para prever o risco de atraso nas entregas de pedidos de e-commerce brasileiro.
 
-O projeto utilizará o conjunto de dados público Brazilian E-Commerce Public Dataset by Olist para explorar os dados, preparar as informações, treinar e avaliar modelos preditivos e, futuramente, disponibilizar os resultados por meio de uma API e de uma interface web.
+O projeto utiliza o **Brazilian E-Commerce Public Dataset by Olist** para analisar dados históricos, preparar informações, treinar e avaliar modelos preditivos e, futuramente, disponibilizar as previsões por meio de uma API REST e de uma interface web.
 
-Atualmente, o projeto está na fase de **configuração inicial e organização da estrutura**.
+O desenvolvimento está organizado em etapas, desde a análise exploratória e preparação dos dados até a avaliação dos modelos e a integração da solução com o backend e o frontend.
 
 ## Objetivo
 
-Desenvolver uma solução de análise preditiva capaz de estimar a probabilidade de um pedido ser entregue após a data prevista, utilizando informações disponíveis no momento da compra.
+Desenvolver uma solução de análise preditiva capaz de estimar o risco de um pedido ser entregue após a data prevista, utilizando informações disponíveis no momento da compra.
 
-## Tecnologias previstas
+A solução deverá utilizar dados históricos para construir um modelo de classificação binária, disponibilizar previsões por meio de uma API e apresentar os resultados em uma interface interativa.
+
+## Tecnologias
 
 - **Python:** linguagem principal.
 - **Pandas e NumPy:** manipulação e análise de dados.
@@ -25,6 +27,9 @@ Desenvolver uma solução de análise preditiva capaz de estimar a probabilidade
 - **SQLite:** armazenamento do histórico de previsões.
 - **Pytest e HTTPX:** testes automatizados.
 - **Joblib:** serialização de modelos treinados.
+- **Python-dotenv:** gerenciamento de variáveis de ambiente.
+
+As versões das dependências estão registradas em `requirements.txt`.
 
 ## Estrutura do projeto
 
@@ -48,6 +53,14 @@ DeliveryRisk_AI/
 │   └── config.py
 ├── pipeline/
 │   ├── src/
+│   │   ├── carregamento.py
+│   │   ├── analise_exploratoria.py
+│   │   ├── tratamento.py
+│   │   ├── integracao_dados.py
+│   │   ├── preparacao_modelo.py
+│   │   ├── modelos.py
+│   │   ├── avaliacao.py
+│   │   └── robustez.py
 │   ├── notebooks/
 │   │   └── delivery_risk_analysis.ipynb
 │   └── scripts/
@@ -78,34 +91,34 @@ A estrutura foi organizada para separar as responsabilidades do projeto:
 
 - `backend/`: componentes da futura API.
 - `frontend/`: componentes da futura interface web.
-- `pipeline/`: scripts, módulos e notebook destinados ao processamento e à modelagem.
+- `pipeline/`: módulos, scripts e notebook destinados ao processamento e à modelagem.
 - `data/raw/`: arquivos originais do conjunto de dados.
-- `data/processed/`: espaço destinado aos dados tratados.
+- `data/processed/`: espaço destinado aos dados processados.
 - `models/`: espaço destinado aos modelos treinados.
-- `images/`: organização das visualizações e dos gráficos gerados.
+- `images/`: organização das visualizações e dos gráficos.
 - `reports/metrics/`: espaço destinado aos relatórios de métricas.
 - `tests/`: testes automatizados.
 - `docs/`: documentação técnica do projeto.
 
-Os diretórios e arquivos representam a organização planejada. Suas funcionalidades serão desenvolvidas nas próximas etapas.
+Os diretórios e arquivos representam a estrutura definida para o projeto. A presença de um arquivo não implica que sua implementação esteja concluída.
 
 ## Base de dados
 
-Será utilizado o **Brazilian E-Commerce Public Dataset by Olist**, disponibilizado publicamente no Kaggle.
+O projeto utiliza o **Brazilian E-Commerce Public Dataset by Olist**, disponibilizado publicamente no Kaggle.
 
-Fonte: https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce
+Fonte: [Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
 
-Os seguintes arquivos CSV já estão organizados em `data/raw/`:
+Os cinco arquivos CSV utilizados na análise exploratória são:
 
 | Arquivo | Descrição |
 |---|---|
-| `olist_orders_dataset.csv` | Informações dos pedidos e datas relacionadas à entrega. |
-| `olist_order_items_dataset.csv` | Itens associados aos pedidos. |
-| `olist_customers_dataset.csv` | Informações dos clientes. |
-| `olist_products_dataset.csv` | Informações dos produtos. |
-| `olist_sellers_dataset.csv` | Informações dos vendedores. |
+| `olist_orders_dataset.csv` | Informações dos pedidos e datas relacionadas ao processo de entrega. |
+| `olist_order_items_dataset.csv` | Itens associados aos pedidos, incluindo produtos, vendedores, preços e fretes. |
+| `olist_customers_dataset.csv` | Identificadores e informações geográficas dos clientes. |
+| `olist_products_dataset.csv` | Informações cadastrais, categorias e características físicas dos produtos. |
+| `olist_sellers_dataset.csv` | Identificadores e informações geográficas dos vendedores. |
 
-A preparação e a integração desses dados serão realizadas em uma etapa posterior.
+Os arquivos originais são utilizados como fontes para a análise e as etapas posteriores de preparação dos dados. A disponibilidade dos arquivos no ambiente local deve ser verificada antes da execução do pipeline.
 
 ## Configuração do ambiente
 
@@ -135,11 +148,17 @@ Com o ambiente virtual ativado:
 python -m pip install -r requirements.txt
 ```
 
-As dependências diretas do projeto e suas versões estão registradas em `requirements.txt`.
+### 4. Verificar as dependências
 
-### 4. Configuração do Jupyter Notebook
+Para verificar possíveis conflitos:
 
-O Jupyter e o `ipykernel` estão incluídos nas dependências do projeto. O ambiente virtual foi registrado como um kernel do Jupyter com o nome:
+```powershell
+python -m pip check
+```
+
+### 5. Configuração do Jupyter Notebook
+
+O Jupyter e o `ipykernel` fazem parte das dependências do projeto. O ambiente virtual foi registrado como um kernel do Jupyter com o nome de exibição:
 
 `Python (DeliveryRisk AI)`
 
@@ -149,13 +168,110 @@ Para iniciar o Jupyter Notebook:
 jupyter notebook
 ```
 
-No notebook `delivery_risk_analysis.ipynb`, selecione o kernel **Python (DeliveryRisk AI)** para utilizar o ambiente virtual do projeto.
+No notebook `pipeline/notebooks/delivery_risk_analysis.ipynb`, selecione o kernel **Python (DeliveryRisk AI)** para utilizar o ambiente virtual do projeto.
+
+## Fase 2 — Desenvolvimento do pipeline de Machine Learning
+
+A Fase 2 foi planejada em sete etapas:
+
+| Etapa | Descrição |
+|---|---|
+| 2.1 | Carregamento, diagnóstico e análise exploratória dos dados (EDA). |
+| 2.2 | Integração dos dados e construção da variável-alvo. |
+| 2.3 | Pré-processamento e engenharia de atributos. |
+| 2.4 | Divisão dos dados em treino, validação e teste. |
+| 2.5 | Treinamento e ajuste dos modelos. |
+| 2.6 | Avaliação comparativa e análise do custo computacional. |
+| 2.7 | Análise de robustez, generalização e serialização do modelo final. |
+
+### Etapa 2.1 — Carregamento, diagnóstico e análise exploratória dos dados (EDA)
+
+**Status: concluída.**
+
+As análises foram documentadas no notebook `pipeline/notebooks/delivery_risk_analysis.ipynb`.
+
+Foram carregados e examinados os cinco datasets do projeto, com foco na compreensão da estrutura, qualidade e distribuição dos dados.
+
+As atividades realizadas foram:
+
+- Carregamento dos datasets.
+- Análise das dimensões e dos tipos de dados.
+- Diagnóstico de valores ausentes.
+- Verificação de registros integralmente duplicados.
+- Análise de chaves e identificadores.
+- Análise das distribuições das variáveis numéricas.
+- Análise das distribuições das variáveis categóricas.
+- Geração e interpretação de matrizes de correlação de Pearson.
+
+#### Resumo do diagnóstico
+
+| Dataset | Registros | Colunas | Valores ausentes | Registros integralmente duplicados |
+|---|---:|---:|---:|---:|
+| `orders` | 99.441 | 8 | 4.908 | 0 |
+| `order_items` | 112.650 | 7 | 0 | 0 |
+| `customers` | 99.441 | 5 | 0 | 0 |
+| `products` | 32.951 | 9 | 2.448 | 0 |
+| `sellers` | 3.095 | 4 | 0 | 0 |
+| **Total** | **347.578** | — | **7.356** | **0** |
+
+O total de registros corresponde à soma das linhas dos cinco datasets, que possuem diferentes granularidades. O total de valores ausentes corresponde à soma das células ausentes, e não à quantidade de registros afetados.
+
+#### Principais observações
+
+**Valores ausentes**
+
+- Em `orders`, as ausências concentram-se nas datas de aprovação e nas etapas de entrega.
+- Em `products`, foram identificados 611 produtos com pelo menos um campo ausente.
+- A análise por status em `orders` demonstrou que os padrões de ausência variam conforme a situação do pedido.
+
+**Duplicatas e chaves**
+
+- Não foram encontrados registros integralmente duplicados nos cinco datasets.
+- `order_id` é único em `orders`.
+- A combinação `order_id` + `order_item_id` não apresentou duplicatas em `order_items`.
+- A repetição de `order_id` em `order_items` é compatível com a existência de vários itens por pedido.
+
+**Distribuições numéricas e categóricas**
+
+- As variáveis `price` e `freight_value` de `order_items` apresentam distribuições assimétricas à direita.
+- A categoria `delivered` predomina em `orders`.
+- Os registros de clientes e vendedores apresentam concentração em determinadas cidades e estados.
+- Os produtos apresentam diferentes frequências entre as categorias cadastradas.
+- Algumas colunas inicialmente classificadas como categóricas representam identificadores ou datas armazenadas como texto.
+
+**Correlações**
+
+- Em `order_items`, foi observada correlação positiva moderada entre `price` e `freight_value` (0,41).
+- Em `products`, o peso apresentou correlações positivas com altura (0,56), largura (0,53) e comprimento (0,48).
+
+As correlações são descritivas e não demonstram causalidade.
+
+#### Resultado da etapa
+
+A EDA permitiu documentar as características estruturais dos datasets, os padrões de valores ausentes, as propriedades das distribuições e as associações lineares observadas.
+
+Os resultados servirão de referência para a integração dos dados e a construção da variável-alvo nas próximas etapas.
+
+Nenhuma limpeza definitiva, imputação ou exclusão de registros foi realizada como resultado dessas análises. A integração dos datasets e a preparação para modelagem permanecem como atividades posteriores.
+
+## Variável-alvo planejada
+
+A variável-alvo do problema de classificação será `delivery_delayed`:
+
+- `1`: pedido entregue depois da data estimada.
+- `0`: pedido entregue na data estimada ou antes dela.
+
+A definição utilizará as datas de entrega efetiva ao cliente e de entrega estimada.
+
+Pedidos sem informações suficientes para determinar o resultado deverão ser tratados conforme regras explícitas de elegibilidade. A definição e a construção dessa variável ainda fazem parte da Etapa 2.2.
+
+Para prevenir vazamento de dados, o modelo deverá utilizar atributos compatíveis com uma previsão realizada no momento da compra. Informações que só ficam disponíveis depois da compra não deverão ser utilizadas como preditores.
 
 ## Controle de versão
 
 O projeto utiliza Git para controle de versão e organização do desenvolvimento por branches.
 
-Branches planejadas:
+Branches planejadas ou definidas:
 
 - `main`
 - `develop`
@@ -166,27 +282,51 @@ Branches planejadas:
 - `feature/Frontend`
 - `Feature/Documentacao`
 
+As mensagens de commit seguem a convenção Conventional Commits, com tipos como `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `style` e `perf`.
+
+A branch ativa e o estado atual do repositório devem ser verificados antes de realizar operações Git.
+
 ## Status atual
 
+### Fase 1 — Estruturação inicial
+
 - [x] Criação da estrutura inicial de diretórios e arquivos.
-- [x] Organização dos cinco arquivos CSV em `data/raw/`.
 - [x] Configuração do ambiente virtual Python.
-- [x] Instalação e registro das dependências do projeto.
+- [x] Definição e registro das dependências em `requirements.txt`.
 - [x] Configuração do kernel do Jupyter Notebook.
-- [x] Criação do arquivo `requirements.txt`.
 - [x] Configuração inicial do `.gitignore`.
 - [x] Documentação inicial do projeto no `README.md`.
 
-### Próximas etapas
+### Fase 2 — Pipeline de Machine Learning
 
-- [ ] Realizar a análise exploratória dos dados.
-- [ ] Definir e executar o processo de preparação e integração dos dados.
-- [ ] Treinar e avaliar os modelos de Machine Learning.
+- [x] **Etapa 2.1:** carregamento, diagnóstico e análise exploratória dos dados.
+- [ ] **Etapa 2.2:** integração dos dados e construção da variável-alvo.
+- [ ] **Etapa 2.3:** pré-processamento e engenharia de atributos.
+- [ ] **Etapa 2.4:** divisão dos dados em treino, validação e teste.
+- [ ] **Etapa 2.5:** treinamento e ajuste dos modelos.
+- [ ] **Etapa 2.6:** avaliação comparativa e custo computacional.
+- [ ] **Etapa 2.7:** robustez, generalização e serialização.
+
+### Desenvolvimento da aplicação
+
 - [ ] Desenvolver a API com FastAPI.
 - [ ] Desenvolver a interface com Streamlit.
 - [ ] Implementar o armazenamento do histórico de previsões.
 - [ ] Criar e executar os testes automatizados.
 - [ ] Completar a documentação técnica.
+
+## Próximas etapas
+
+A próxima atividade é a **Etapa 2.2 — Integração dos dados e construção da variável-alvo**, que deverá:
+
+1. Integrar os cinco datasets respeitando suas chaves e granularidades.
+2. Agregar os itens para manter uma linha por pedido.
+3. Definir os critérios de elegibilidade dos pedidos.
+4. Construir `delivery_delayed` a partir das datas efetiva e estimada de entrega.
+5. Validar a unicidade dos pedidos, as junções, os valores ausentes e a distribuição do alvo.
+6. Persistir a base integrada e documentar os resultados reais.
+
+Após a conclusão dessa etapa, o projeto seguirá para o pré-processamento e a engenharia de atributos, antes de iniciar o treinamento dos modelos.
 
 ## Licença
 
