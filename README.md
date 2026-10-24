@@ -108,7 +108,7 @@ O projeto utiliza o **Brazilian E-Commerce Public Dataset by Olist**, disponibil
 
 Fonte: [Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
 
-Os cinco arquivos CSV utilizados na análise exploratória são:
+Os cinco arquivos CSV utilizados nas etapas de análise e preparação são:
 
 | Arquivo | Descrição |
 |---|---|
@@ -174,15 +174,15 @@ No notebook `pipeline/notebooks/delivery_risk_analysis.ipynb`, selecione o kerne
 
 A Fase 2 foi planejada em sete etapas:
 
-| Etapa | Descrição |
-|---|---|
-| 2.1 | Carregamento, diagnóstico e análise exploratória dos dados (EDA). |
-| 2.2 | Integração dos dados e construção da variável-alvo. |
-| 2.3 | Pré-processamento e engenharia de atributos. |
-| 2.4 | Divisão dos dados em treino, validação e teste. |
-| 2.5 | Treinamento e ajuste dos modelos. |
-| 2.6 | Avaliação comparativa e análise do custo computacional. |
-| 2.7 | Análise de robustez, generalização e serialização do modelo final. |
+| Etapa | Descrição | Status |
+|---|---|---|
+| 2.1 | Carregamento, diagnóstico e análise exploratória dos dados (EDA). | Concluída |
+| 2.2 | Tratamento e integração dos dados, com construção da variável-alvo. | Concluída |
+| 2.3 | Pré-processamento e engenharia de atributos. | Pendente |
+| 2.4 | Divisão dos dados em treino, validação e teste. | Pendente |
+| 2.5 | Treinamento e ajuste dos modelos. | Pendente |
+| 2.6 | Avaliação comparativa e análise do custo computacional. | Pendente |
+| 2.7 | Análise de robustez, generalização e serialização do modelo final. | Pendente |
 
 ### Etapa 2.1 — Carregamento, diagnóstico e análise exploratória dos dados (EDA)
 
@@ -250,22 +250,110 @@ As correlações são descritivas e não demonstram causalidade.
 
 A EDA permitiu documentar as características estruturais dos datasets, os padrões de valores ausentes, as propriedades das distribuições e as associações lineares observadas.
 
-Os resultados servirão de referência para a integração dos dados e a construção da variável-alvo nas próximas etapas.
+Os resultados serviram de referência para o tratamento, a integração dos dados e a construção da variável-alvo.
 
-Nenhuma limpeza definitiva, imputação ou exclusão de registros foi realizada como resultado dessas análises. A integração dos datasets e a preparação para modelagem permanecem como atividades posteriores.
+### Etapa 2.2 — Tratamento e integração dos dados
 
-## Variável-alvo planejada
+**Status: concluída.**
 
-A variável-alvo do problema de classificação será `delivery_delayed`:
+A etapa teve como objetivo preparar, validar e integrar os datasets para construir uma base consolidada, com uma linha por pedido, e criar a variável-alvo utilizada na previsão de atrasos nas entregas.
+
+#### Tratamento inicial e validação
+
+Os cinco datasets — `orders`, `order_items`, `customers`, `products` e `sellers` — foram copiados para a estrutura `datasets_trabalho`, preservando os dados originais carregados.
+
+As atividades realizadas foram:
+
+- Conversão das colunas de data selecionadas para o tipo `datetime64[us]`.
+- Normalização dos textos, com remoção de espaços nas extremidades e conversão de textos vazios em valores ausentes.
+- Validação das chaves dos cinco datasets, incluindo a chave composta de `order_items`.
+- Verificação de valores ausentes, não numéricos e infinitos nas colunas numéricas selecionadas.
+- Validação das correspondências entre os identificadores dos datasets relacionados.
+
+Não foram identificadas datas inválidas nas colunas verificadas, chaves inválidas ou referências sem correspondência nas relações analisadas. Os valores ausentes existentes foram preservados para avaliação nas etapas posteriores.
+
+#### Agregação e integração
+
+Os 112.650 registros de `order_items` foram agregados por `order_id`, resultando em 98.666 pedidos com itens.
+
+A agregação reuniu informações sobre quantidades de itens e produtos, valores de produtos e frete, categorias, características físicas dos produtos e informações geográficas dos vendedores.
+
+Em seguida, os dados agregados foram integrados às informações de `orders` e `customers`, preservando a granularidade de um registro por pedido.
+
+A base integrada apresentou os seguintes resultados:
+
+| Indicador | Resultado |
+|---|---:|
+| Total de pedidos | 99.441 |
+| Total de colunas | 29 |
+| IDs de pedido distintos | 99.441 |
+| IDs de pedido ausentes | 0 |
+| Linhas pertencentes a pedidos duplicados | 0 |
+| Pedidos sem itens | 775 |
+
+A validação confirmou que a quantidade de registros corresponde à quantidade esperada de pedidos e que a base integrada mantém uma linha por pedido.
+
+#### Criação e validação da variável-alvo
+
+Foi criada a variável `delivery_delayed` para classificar o resultado da entrega:
+
+- `1`: entrega realizada após a data estimada.
+- `0`: entrega realizada na data estimada ou antes dela.
+- Valor ausente: ausência de informações suficientes para determinar a classificação.
+
+A distribuição obtida foi:
+
+| Indicador | Quantidade |
+|---|---:|
+| Total de pedidos | 99.441 |
+| Entregas atrasadas | 7.827 |
+| Entregas no prazo | 88.649 |
+| Pedidos sem classificação | 2.965 |
+| Pedidos com classificação válida | 96.476 |
+
+Entre os pedidos com classificação válida, aproximadamente 8,11% apresentaram atraso.
+
+Uma verificação independente da regra de classificação foi realizada nos 96.476 pedidos que possuíam as duas datas necessárias. Não foram encontradas divergências entre a regra definida e os valores calculados.
+
+Os 2.965 pedidos sem classificação foram mantidos com a variável-alvo ausente, sem atribuição artificial de rótulos.
+
+#### Investigação dos pedidos sem itens
+
+Foram identificados 775 pedidos sem registros correspondentes em `order_items`.
+
+Esses pedidos apresentaram valores ausentes nas 15 colunas derivadas da agregação. Também foi verificado que nenhum desses pedidos possuía a variável-alvo preenchida.
+
+Os registros foram mantidos na base integrada, e as ausências foram documentadas para orientar as decisões posteriores de preparação dos dados.
+
+#### Salvamento da base integrada
+
+A base resultante foi salva no formato Parquet em:
+
+`data/processed/base_integrada.parquet`
+
+O arquivo permite reutilizar os dados integrados nas próximas etapas sem repetir as operações de agregação e integração, desde que os dados de origem e as regras de processamento permaneçam inalterados.
+
+#### Resultado da etapa
+
+A Etapa 2.2 foi concluída com a preparação e validação dos datasets, a agregação dos itens por pedido, a integração das informações, a criação e validação da variável-alvo e o salvamento da base consolidada.
+
+A base integrada contém 99.441 registros e 29 colunas, mantém uma linha por pedido e não apresenta IDs de pedido ausentes ou duplicados. Os valores ausentes relevantes foram preservados e documentados para orientar as próximas decisões do pipeline.
+
+## Variável-alvo
+
+A variável-alvo `delivery_delayed` identifica se um pedido foi entregue após a data estimada:
 
 - `1`: pedido entregue depois da data estimada.
 - `0`: pedido entregue na data estimada ou antes dela.
+- Valor ausente: pedido sem informações suficientes para determinar a classificação.
 
-A definição utilizará as datas de entrega efetiva ao cliente e de entrega estimada.
+A variável foi construída na Etapa 2.2 utilizando as datas efetiva e estimada de entrega e passou por uma verificação independente, sem divergências nos registros elegíveis.
 
-Pedidos sem informações suficientes para determinar o resultado deverão ser tratados conforme regras explícitas de elegibilidade. A definição e a construção dessa variável ainda fazem parte da Etapa 2.2.
+A base integrada contém 96.476 pedidos com classificação válida e 2.965 pedidos sem classificação.
 
 Para prevenir vazamento de dados, o modelo deverá utilizar atributos compatíveis com uma previsão realizada no momento da compra. Informações que só ficam disponíveis depois da compra não deverão ser utilizadas como preditores.
+
+Os pedidos sem classificação deverão ser tratados conforme critérios explícitos de elegibilidade antes do treinamento dos modelos.
 
 ## Controle de versão
 
@@ -300,12 +388,12 @@ A branch ativa e o estado atual do repositório devem ser verificados antes de r
 ### Fase 2 — Pipeline de Machine Learning
 
 - [x] **Etapa 2.1:** carregamento, diagnóstico e análise exploratória dos dados.
-- [ ] **Etapa 2.2:** integração dos dados e construção da variável-alvo.
+- [x] **Etapa 2.2:** tratamento e integração dos dados, com construção da variável-alvo.
 - [ ] **Etapa 2.3:** pré-processamento e engenharia de atributos.
 - [ ] **Etapa 2.4:** divisão dos dados em treino, validação e teste.
 - [ ] **Etapa 2.5:** treinamento e ajuste dos modelos.
-- [ ] **Etapa 2.6:** avaliação comparativa e custo computacional.
-- [ ] **Etapa 2.7:** robustez, generalização e serialização.
+- [ ] **Etapa 2.6:** avaliação comparativa e análise do custo computacional.
+- [ ] **Etapa 2.7:** análise de robustez, generalização e serialização do modelo final.
 
 ### Desenvolvimento da aplicação
 
@@ -317,16 +405,16 @@ A branch ativa e o estado atual do repositório devem ser verificados antes de r
 
 ## Próximas etapas
 
-A próxima atividade é a **Etapa 2.2 — Integração dos dados e construção da variável-alvo**, que deverá:
+A próxima atividade é a **Etapa 2.3 — Pré-processamento e Engenharia de Atributos**, que deverá contemplar:
 
-1. Integrar os cinco datasets respeitando suas chaves e granularidades.
-2. Agregar os itens para manter uma linha por pedido.
-3. Definir os critérios de elegibilidade dos pedidos.
-4. Construir `delivery_delayed` a partir das datas efetiva e estimada de entrega.
-5. Validar a unicidade dos pedidos, as junções, os valores ausentes e a distribuição do alvo.
-6. Persistir a base integrada e documentar os resultados reais.
+1. Definir os critérios de elegibilidade dos registros para modelagem.
+2. Avaliar e tratar os valores ausentes conforme as características e a finalidade das variáveis.
+3. Selecionar e preparar os atributos que poderão ser utilizados pelo modelo.
+4. Avaliar a necessidade de codificação de variáveis categóricas e transformação de variáveis numéricas.
+5. Verificar possíveis fontes de vazamento de dados, considerando o momento em que a previsão deverá ser realizada.
+6. Documentar as decisões de preparação e gerar a base destinada às etapas posteriores do pipeline.
 
-Após a conclusão dessa etapa, o projeto seguirá para o pré-processamento e a engenharia de atributos, antes de iniciar o treinamento dos modelos.
+As estratégias específicas de pré-processamento e engenharia de atributos serão definidas a partir das características observadas na base integrada e dos requisitos do problema de previsão.
 
 ## Licença
 
