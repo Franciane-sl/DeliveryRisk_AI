@@ -4,15 +4,17 @@
 
 O **DeliveryRisk AI** é um projeto de Machine Learning que tem como objetivo desenvolver um sistema para prever o risco de atraso nas entregas de pedidos de e-commerce brasileiro.
 
-O projeto utilizará o conjunto de dados público Brazilian E-Commerce Public Dataset by Olist para explorar os dados, preparar as informações, treinar e avaliar modelos preditivos e, futuramente, disponibilizar os resultados por meio de uma API e de uma interface web.
+O projeto utiliza o **Brazilian E-Commerce Public Dataset by Olist** para analisar dados históricos, preparar informações, treinar e avaliar modelos preditivos e, futuramente, disponibilizar as previsões por meio de uma API REST e de uma interface web.
 
-Atualmente, o projeto está na fase de **configuração inicial e organização da estrutura**.
+O desenvolvimento está organizado em etapas, desde a análise exploratória e preparação dos dados até a avaliação dos modelos e a integração da solução com o backend e o frontend.
 
 ## Objetivo
 
-Desenvolver uma solução de análise preditiva capaz de estimar a probabilidade de um pedido ser entregue após a data prevista, utilizando informações disponíveis no momento da compra.
+Desenvolver uma solução de análise preditiva capaz de estimar o risco de um pedido ser entregue após a data prevista, utilizando informações disponíveis no momento da compra.
 
-## Tecnologias previstas
+A solução deverá utilizar dados históricos para construir um modelo de classificação binária, disponibilizar previsões por meio de uma API e apresentar os resultados em uma interface interativa.
+
+## Tecnologias
 
 - **Python:** linguagem principal.
 - **Pandas e NumPy:** manipulação e análise de dados.
@@ -25,6 +27,9 @@ Desenvolver uma solução de análise preditiva capaz de estimar a probabilidade
 - **SQLite:** armazenamento do histórico de previsões.
 - **Pytest e HTTPX:** testes automatizados.
 - **Joblib:** serialização de modelos treinados.
+- **Python-dotenv:** gerenciamento de variáveis de ambiente.
+
+As versões das dependências estão registradas em `requirements.txt`.
 
 ## Estrutura do projeto
 
@@ -48,6 +53,15 @@ DeliveryRisk_AI/
 │   └── config.py
 ├── pipeline/
 │   ├── src/
+│   │   ├── carregamento.py
+│   │   ├── analise_exploratoria.py
+│   │   ├── tratamento.py
+│   │   ├── integracao_dados.py
+│   │   ├── feature_engineering.py
+│   │   ├── preparacao_modelo.py
+│   │   ├── modelos.py
+│   │   ├── avaliacao.py
+│   │   └── robustez.py
 │   ├── notebooks/
 │   │   └── delivery_risk_analysis.ipynb
 │   └── scripts/
@@ -78,34 +92,34 @@ A estrutura foi organizada para separar as responsabilidades do projeto:
 
 - `backend/`: componentes da futura API.
 - `frontend/`: componentes da futura interface web.
-- `pipeline/`: scripts, módulos e notebook destinados ao processamento e à modelagem.
+- `pipeline/`: módulos, scripts e notebook destinados ao processamento e à modelagem.
 - `data/raw/`: arquivos originais do conjunto de dados.
-- `data/processed/`: espaço destinado aos dados tratados.
+- `data/processed/`: espaço destinado aos dados processados.
 - `models/`: espaço destinado aos modelos treinados.
-- `images/`: organização das visualizações e dos gráficos gerados.
+- `images/`: organização das visualizações e dos gráficos.
 - `reports/metrics/`: espaço destinado aos relatórios de métricas.
 - `tests/`: testes automatizados.
 - `docs/`: documentação técnica do projeto.
 
-Os diretórios e arquivos representam a organização planejada. Suas funcionalidades serão desenvolvidas nas próximas etapas.
+Os diretórios e arquivos representam a estrutura definida para o projeto. A presença de um arquivo não implica que sua implementação esteja concluída.
 
 ## Base de dados
 
-Será utilizado o **Brazilian E-Commerce Public Dataset by Olist**, disponibilizado publicamente no Kaggle.
+O projeto utiliza o **Brazilian E-Commerce Public Dataset by Olist**, disponibilizado publicamente no Kaggle.
 
-Fonte: https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce
+Fonte: [Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
 
-Os seguintes arquivos CSV já estão organizados em `data/raw/`:
+Os cinco arquivos CSV utilizados nas etapas de análise e preparação são:
 
 | Arquivo | Descrição |
 |---|---|
-| `olist_orders_dataset.csv` | Informações dos pedidos e datas relacionadas à entrega. |
-| `olist_order_items_dataset.csv` | Itens associados aos pedidos. |
-| `olist_customers_dataset.csv` | Informações dos clientes. |
-| `olist_products_dataset.csv` | Informações dos produtos. |
-| `olist_sellers_dataset.csv` | Informações dos vendedores. |
+| `olist_orders_dataset.csv` | Informações dos pedidos e datas relacionadas ao processo de entrega. |
+| `olist_order_items_dataset.csv` | Itens associados aos pedidos, incluindo produtos, vendedores, preços e fretes. |
+| `olist_customers_dataset.csv` | Identificadores e informações geográficas dos clientes. |
+| `olist_products_dataset.csv` | Informações cadastrais, categorias e características físicas dos produtos. |
+| `olist_sellers_dataset.csv` | Identificadores e informações geográficas dos vendedores. |
 
-A preparação e a integração desses dados serão realizadas em uma etapa posterior.
+Os arquivos originais são utilizados como fontes para a análise e as etapas posteriores de preparação dos dados. A disponibilidade dos arquivos no ambiente local deve ser verificada antes da execução do pipeline.
 
 ## Configuração do ambiente
 
@@ -135,13 +149,17 @@ Com o ambiente virtual ativado:
 python -m pip install -r requirements.txt
 ```
 
-As dependências diretas do projeto e suas versões estão registradas em `requirements.txt`.
+### 4. Verificar as dependências
 
-### 4. Configuração do Jupyter Notebook
+Para verificar possíveis conflitos:
 
-O Jupyter e o `ipykernel` estão incluídos nas dependências do projeto. O ambiente virtual foi registrado como um kernel do Jupyter com o nome:
+```powershell
+python -m pip check
+```
 
-`Python (DeliveryRisk AI)`
+### 5. Configuração do Jupyter Notebook
+
+O Jupyter e o `ipykernel` fazem parte das dependências do projeto. O ambiente virtual foi registrado como um kernel do Jupyter com o nome de exibição **Python (DeliveryRisk AI)**.
 
 Para iniciar o Jupyter Notebook:
 
@@ -149,13 +167,320 @@ Para iniciar o Jupyter Notebook:
 jupyter notebook
 ```
 
-No notebook `delivery_risk_analysis.ipynb`, selecione o kernel **Python (DeliveryRisk AI)** para utilizar o ambiente virtual do projeto.
+No notebook `pipeline/notebooks/delivery_risk_analysis.ipynb`, selecione o kernel **Python (DeliveryRisk AI)** para utilizar o ambiente virtual do projeto.
+
+## Fase 2 — Desenvolvimento do pipeline de Machine Learning
+
+A Fase 2 foi planejada em sete etapas:
+
+| Etapa | Descrição | Status |
+|---|---|---|
+| 2.1 | Carregamento, diagnóstico e análise exploratória dos dados (EDA). | Concluída |
+| 2.2 | Tratamento e integração dos dados, com construção da variável-alvo. | Concluída |
+| 2.3 | Pré-processamento e engenharia de atributos. | Concluída |
+| 2.4 | Divisão dos dados em treino, validação e teste. | Concluída |
+| 2.5 | Treinamento e ajuste dos modelos. | Pendente |
+| 2.6 | Avaliação comparativa e análise do custo computacional. | Pendente |
+| 2.7 | Análise de robustez, generalização e serialização do modelo final. | Pendente |
+
+### Etapa 2.1 — Carregamento, diagnóstico e análise exploratória dos dados (EDA)
+
+**Status: concluída.**
+
+As análises foram documentadas no notebook `pipeline/notebooks/delivery_risk_analysis.ipynb`.
+
+Foram carregados e examinados os cinco datasets do projeto, com foco na compreensão da estrutura, qualidade e distribuição dos dados.
+
+As atividades realizadas foram:
+
+- Carregamento dos datasets.
+- Análise das dimensões e dos tipos de dados.
+- Diagnóstico de valores ausentes.
+- Verificação de registros integralmente duplicados.
+- Análise de chaves e identificadores.
+- Análise das distribuições das variáveis numéricas.
+- Análise das distribuições das variáveis categóricas.
+- Geração e interpretação de matrizes de correlação de Pearson.
+
+#### Resumo do diagnóstico
+
+| Dataset | Registros | Colunas | Valores ausentes | Registros integralmente duplicados |
+|---|---:|---:|---:|---:|
+| `orders` | 99.441 | 8 | 4.908 | 0 |
+| `order_items` | 112.650 | 7 | 0 | 0 |
+| `customers` | 99.441 | 5 | 0 | 0 |
+| `products` | 32.951 | 9 | 2.448 | 0 |
+| `sellers` | 3.095 | 4 | 0 | 0 |
+| **Total** | **347.578** | — | **7.356** | **0** |
+
+O total de registros corresponde à soma das linhas dos cinco datasets, que possuem diferentes granularidades. O total de valores ausentes corresponde à soma das células ausentes, e não à quantidade de registros afetados.
+
+#### Principais observações
+
+**Valores ausentes**
+
+- Em `orders`, as ausências concentram-se nas datas de aprovação e nas etapas de entrega.
+- Em `products`, foram identificados 611 produtos com pelo menos um campo ausente.
+- A análise por status em `orders` demonstrou que os padrões de ausência variam conforme a situação do pedido.
+
+**Duplicatas e chaves**
+
+- Não foram encontrados registros integralmente duplicados nos cinco datasets.
+- `order_id` é único em `orders`.
+- A combinação `order_id` + `order_item_id` não apresentou duplicatas em `order_items`.
+- A repetição de `order_id` em `order_items` é compatível com a existência de vários itens por pedido.
+
+**Distribuições numéricas e categóricas**
+
+- As variáveis `price` e `freight_value` de `order_items` apresentam distribuições assimétricas à direita.
+- A categoria `delivered` predomina em `orders`.
+- Os registros de clientes e vendedores apresentam concentração em determinadas cidades e estados.
+- Os produtos apresentam diferentes frequências entre as categorias cadastradas.
+- Algumas colunas inicialmente classificadas como categóricas representam identificadores ou datas armazenadas como texto.
+
+**Correlações**
+
+- Em `order_items`, foi observada correlação positiva moderada entre `price` e `freight_value` (0,41).
+- Em `products`, o peso apresentou correlações positivas com altura (0,56), largura (0,53) e comprimento (0,48).
+
+As correlações são descritivas e não demonstram causalidade.
+
+#### Resultado da etapa
+
+A EDA permitiu documentar as características estruturais dos datasets, os padrões de valores ausentes, as propriedades das distribuições e as associações lineares observadas.
+
+Os resultados serviram de referência para o tratamento, a integração dos dados e a construção da variável-alvo.
+
+### Etapa 2.2 — Tratamento e integração dos dados
+
+**Status: concluída.**
+
+A etapa teve como objetivo preparar, validar e integrar os datasets para construir uma base consolidada, com uma linha por pedido, e criar a variável-alvo utilizada na previsão de atrasos nas entregas.
+
+#### Tratamento inicial e validação
+
+Os cinco datasets — `orders`, `order_items`, `customers`, `products` e `sellers` — foram copiados para a estrutura `datasets_trabalho`, preservando os dados originais carregados.
+
+As atividades realizadas foram:
+
+- Conversão das colunas de data selecionadas para o tipo `datetime64[us]`.
+- Normalização dos textos, com remoção de espaços nas extremidades e conversão de textos vazios em valores ausentes.
+- Validação das chaves dos cinco datasets, incluindo a chave composta de `order_items`.
+- Verificação de valores ausentes, não numéricos e infinitos nas colunas numéricas selecionadas.
+- Validação das correspondências entre os identificadores dos datasets relacionados.
+
+Não foram identificadas datas inválidas nas colunas verificadas, chaves inválidas ou referências sem correspondência nas relações analisadas. Os valores ausentes existentes foram preservados para avaliação nas etapas posteriores.
+
+#### Agregação e integração
+
+Os 112.650 registros de `order_items` foram agregados por `order_id`, resultando em 98.666 pedidos com itens.
+
+A agregação reuniu informações sobre quantidades de itens e produtos, valores de produtos e frete, categorias, características físicas dos produtos e informações geográficas dos vendedores.
+
+Em seguida, os dados agregados foram integrados às informações de `orders` e `customers`, preservando a granularidade de um registro por pedido.
+
+A base integrada apresentou os seguintes resultados:
+
+| Indicador | Resultado |
+|---|---:|
+| Total de pedidos | 99.441 |
+| Total de colunas | 29 |
+| IDs de pedido distintos | 99.441 |
+| IDs de pedido ausentes | 0 |
+| Linhas pertencentes a pedidos duplicados | 0 |
+| Pedidos sem itens | 775 |
+
+A validação confirmou que a quantidade de registros corresponde à quantidade esperada de pedidos e que a base integrada mantém uma linha por pedido.
+
+#### Criação e validação da variável-alvo
+
+Foi criada a variável `delivery_delayed` para classificar o resultado da entrega:
+
+- `1`: entrega realizada após a data estimada.
+- `0`: entrega realizada na data estimada ou antes dela.
+- Valor ausente: ausência de informações suficientes para determinar a classificação.
+
+A distribuição obtida foi:
+
+| Indicador | Quantidade |
+|---|---:|
+| Total de pedidos | 99.441 |
+| Entregas atrasadas | 7.827 |
+| Entregas no prazo | 88.649 |
+| Pedidos sem classificação | 2.965 |
+| Pedidos com classificação válida | 96.476 |
+
+Entre os pedidos com classificação válida, aproximadamente 8,11% apresentaram atraso.
+
+Uma verificação independente da regra de classificação foi realizada nos 96.476 pedidos que possuíam as duas datas necessárias. Não foram encontradas divergências entre a regra definida e os valores calculados.
+
+Os 2.965 pedidos sem classificação foram mantidos com a variável-alvo ausente, sem atribuição artificial de rótulos.
+
+#### Investigação dos pedidos sem itens
+
+Foram identificados 775 pedidos sem registros correspondentes em `order_items`.
+
+Esses pedidos apresentaram valores ausentes nas 15 colunas derivadas da agregação. Também foi verificado que nenhum desses pedidos possuía a variável-alvo preenchida.
+
+Os registros foram mantidos na base integrada, e as ausências foram documentadas para orientar as decisões posteriores de preparação dos dados.
+
+#### Salvamento da base integrada
+
+A base resultante foi salva no formato Parquet em:
+
+`data/processed/base_integrada.parquet`
+
+O arquivo permite reutilizar os dados integrados nas próximas etapas sem repetir as operações de agregação e integração, desde que os dados de origem e as regras de processamento permaneçam inalterados.
+
+#### Resultado da etapa
+
+A Etapa 2.2 foi concluída com a preparação e validação dos datasets, a agregação dos itens por pedido, a integração das informações, a criação e validação da variável-alvo e o salvamento da base consolidada.
+
+A base integrada contém 99.441 registros e 29 colunas, mantém uma linha por pedido e não apresenta IDs de pedido ausentes ou duplicados. Os valores ausentes relevantes foram preservados e documentados para orientar as próximas decisões do pipeline.
+
+### Etapa 2.3 — Pré-processamento e engenharia de atributos
+
+**Status: concluída.**
+
+A etapa teve como objetivo preparar as variáveis preditoras para a futura modelagem, criar atributos relevantes a partir do momento da compra e configurar um pipeline de pré-processamento que reduza inconsistências e evite vazamento de informações.
+
+#### Elegibilidade e atributos temporais
+
+A base foi filtrada para manter os pedidos elegíveis, isto é, aqueles que possuem uma classificação válida em `delivery_delayed`. A base elegível contém 96.476 pedidos e 29 colunas antes da engenharia de atributos.
+
+A partir de `order_purchase_timestamp`, foram criados seis atributos temporais:
+
+- `ano_compra`: ano em que o pedido foi realizado.
+- `mes_compra`: mês da compra.
+- `dia_mes_compra`: dia do mês da compra.
+- `dia_semana_compra`: dia da semana da compra.
+- `hora_compra`: hora da compra.
+- `fim_de_semana_compra`: indicador de compra realizada no fim de semana.
+
+A validação confirmou que não havia datas de compra ausentes ou inválidas na base elegível e que os seis atributos temporais criados não continham valores ausentes. O timestamp original foi removido das variáveis preditoras após a criação dos atributos derivados.
+
+#### Seleção e validação das variáveis preditoras
+
+Foram selecionadas 24 variáveis preditoras, divididas em 17 numéricas e 7 categóricas.
+
+As variáveis abrangem informações geográficas do cliente, características agregadas dos itens e vendedores do pedido, valores e quantidades, categoria predominante dos produtos e atributos temporais da compra.
+
+A seleção exclui identificadores, a variável-alvo e colunas auxiliares de elegibilidade, além de informações que não estariam disponíveis no momento da compra. Entre as colunas excluídas estão as datas de entrega, `order_status`, `order_approved_at` e `order_estimated_delivery_date`. A data estimada de entrega foi mantida fora das variáveis preditoras para respeitar a definição do cenário de previsão.
+
+O prefixo do CEP do cliente, `customer_zip_code_prefix`, foi classificado explicitamente como categórico, evitando que seu valor numérico seja interpretado como uma medida contínua.
+
+As validações confirmaram que todas as 24 variáveis foram classificadas, sem sobreposição entre os grupos numérico e categórico, e que a seleção não continha colunas proibidas.
+
+#### Diagnóstico dos valores ausentes
+
+A análise dos valores ausentes em `X` identificou:
+
+- `categoria_produto_mais_frequente`: 1.332 valores ausentes, aproximadamente 1,38% dos pedidos elegíveis.
+- `product_weight_g_medio`, `product_length_cm_medio`, `product_height_cm_medio` e `product_width_cm_medio`: 16 valores ausentes em cada variável, aproximadamente 0,02%.
+
+A investigação das dimensões físicas mostrou que os 16 pedidos correspondem a 18 itens associados a dois produtos com informações físicas incompletas no dataset `products`. As correspondências entre os itens e os produtos foram encontradas, indicando que as ausências decorrem dos dados cadastrais dos produtos, e não de uma falha na integração.
+
+Os registros não foram excluídos nem receberam valores preenchidos manualmente nesta etapa. O tratamento foi delegado ao pipeline de pré-processamento.
+
+#### Configuração do pipeline de pré-processamento
+
+Foi implementado e inspecionado um `ColumnTransformer` para aplicar transformações adequadas a cada tipo de variável.
+
+| Tipo de variável | Estratégia de valores ausentes | Transformação |
+|---|---|---|
+| Numéricas | Imputação pela mediana (`SimpleImputer`) | Padronização (`StandardScaler`) |
+| Categóricas | Imputação pela categoria mais frequente (`SimpleImputer`) | Codificação One-Hot Encoding, com `handle_unknown="ignore"` |
+
+O pipeline foi configurado, mas seus transformadores não foram ajustados sobre a base completa. O ajuste será realizado após a divisão dos dados, exclusivamente com o conjunto de treinamento, evitando que informações dos conjuntos de validação e teste influenciem o pré-processamento.
+
+#### Resultado da etapa
+
+A Etapa 2.3 foi concluída com a seleção e validação de 24 variáveis preditoras, a criação de seis atributos temporais, a análise dos valores ausentes e a configuração do pipeline de pré-processamento.
+
+A base elegível contém 96.476 pedidos, com as variáveis preditoras definidas e as estratégias de transformação especificadas. Esses dados estão preparados para a divisão temporal, sem que o pipeline tenha sido ajustado sobre os dados completos.
+
+### Etapa 2.4 — Divisão temporal entre treino, validação e teste
+
+**Status: concluída.**
+
+A etapa teve como objetivo separar os dados elegíveis em conjuntos de treino, validação e teste, respeitando a ordem cronológica das compras. Essa estratégia permite avaliar futuramente o modelo em períodos posteriores aos utilizados no treinamento, aproximando a avaliação do cenário de utilização real.
+
+#### Estratégia de divisão temporal
+
+A divisão foi realizada com base na coluna `order_purchase_timestamp`, utilizando os seguintes intervalos:
+
+| Conjunto | Período das compras | Regra aplicada |
+|---|---|---|
+| Treino | Até 28/02/2018 | Data anterior a `2018-03-01` |
+| Validação | Março a maio de 2018 | Data a partir de `2018-03-01` e anterior a `2018-06-01` |
+| Teste | Junho a agosto de 2018 | Data a partir de `2018-06-01` e anterior a `2018-09-01` |
+
+Os limites foram definidos para manter o conjunto de treino no período mais antigo, utilizar o período seguinte para validação e reservar o período mais recente para teste.
+
+#### Resultados da divisão
+
+A divisão foi aplicada aos 96.476 pedidos elegíveis, mantendo as 24 variáveis preditoras selecionadas na Etapa 2.3.
+
+| Conjunto | Quantidade de pedidos | Pedidos atrasados | Pedidos no prazo | Taxa de atraso |
+|---|---:|---:|---:|---:|
+| Treino | 57.323 | 4.395 | 52.928 | 7,67% |
+| Validação | 20.550 | 2.413 | 18.137 | 11,74% |
+| Teste | 18.603 | 1.019 | 17.584 | 5,48% |
+| **Total** | **96.476** | **7.827** | **88.649** | **8,11%** |
+
+A distribuição da variável-alvo varia entre os períodos. A taxa de atraso foi de 7,67% no treino, 11,74% na validação e 5,48% no teste. Essas diferenças foram registradas para contextualizar a avaliação futura dos modelos.
+
+#### Validações realizadas
+
+Foi implementado o módulo `pipeline/src/preparacao_modelo.py`, contendo funções para realizar a divisão temporal, resumir os conjuntos e validar os resultados.
+
+As verificações executadas confirmaram:
+
+- Unicidade dos índices de `X`, `y` e da base elegível.
+- Alinhamento entre as features e a variável-alvo em cada conjunto.
+- Ausência de sobreposição de índices entre treino, validação e teste.
+- Preservação dos 96.476 registros elegíveis após a divisão.
+- Cumprimento dos intervalos temporais definidos.
+- Ordem cronológica entre os conjuntos.
+- Consistência das 24 features nos três conjuntos.
+
+Todas as validações executadas foram concluídas com sucesso.
+
+#### Pré-processamento e prevenção de vazamento de dados
+
+O pipeline de pré-processamento configurado na Etapa 2.3 permaneceu sem ajuste durante esta etapa. Não foram executados `fit()` ou `fit_transform()` antes da divisão temporal.
+
+Nas etapas posteriores, o ajuste dos transformadores deverá utilizar exclusivamente `X_train`. Os conjuntos de validação e teste deverão receber as transformações aprendidas no treino, sem reajuste do pipeline com seus próprios dados.
+
+Essa separação evita que estatísticas de imputação, parâmetros de padronização ou categorias aprendidas durante o pré-processamento sejam influenciados pelos conjuntos destinados à avaliação.
+
+#### Resultado da etapa
+
+A Etapa 2.4 foi concluída com a implementação e validação da divisão temporal dos dados. Os conjuntos `X_train`, `y_train`, `X_val`, `y_val`, `X_test` e `y_test` estão preparados para serem utilizados nas etapas posteriores.
+
+Não foram realizados treinamento de modelos, ajuste de hiperparâmetros ou avaliação de desempenho nesta etapa. Essas atividades serão desenvolvidas nas etapas seguintes do pipeline.
+
+## Variável-alvo
+
+A variável-alvo `delivery_delayed` identifica se um pedido foi entregue após a data estimada:
+
+- `1`: pedido entregue depois da data estimada.
+- `0`: pedido entregue na data estimada ou antes dela.
+- Valor ausente: pedido sem informações suficientes para determinar a classificação.
+
+A variável foi construída na Etapa 2.2 utilizando as datas efetiva e estimada de entrega e passou por uma verificação independente, sem divergências nos registros elegíveis.
+
+A base integrada contém 96.476 pedidos com classificação válida e 2.965 pedidos sem classificação.
+
+Para prevenir vazamento de dados, o modelo deverá utilizar atributos compatíveis com uma previsão realizada no momento da compra. Informações que só ficam disponíveis depois da compra não deverão ser utilizadas como preditores.
+
+Os pedidos sem classificação foram excluídos da base elegível utilizada na preparação para modelagem, conforme os critérios definidos no projeto.
 
 ## Controle de versão
 
 O projeto utiliza Git para controle de versão e organização do desenvolvimento por branches.
 
-Branches planejadas:
+Branches planejadas ou definidas:
 
 - `main`
 - `develop`
@@ -166,27 +491,51 @@ Branches planejadas:
 - `feature/Frontend`
 - `Feature/Documentacao`
 
+As mensagens de commit seguem a convenção Conventional Commits, com tipos como `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `style` e `perf`.
+
+A branch ativa e o estado atual do repositório devem ser verificados antes de realizar operações Git.
+
 ## Status atual
 
+### Fase 1 — Estruturação inicial
+
 - [x] Criação da estrutura inicial de diretórios e arquivos.
-- [x] Organização dos cinco arquivos CSV em `data/raw/`.
 - [x] Configuração do ambiente virtual Python.
-- [x] Instalação e registro das dependências do projeto.
+- [x] Definição e registro das dependências em `requirements.txt`.
 - [x] Configuração do kernel do Jupyter Notebook.
-- [x] Criação do arquivo `requirements.txt`.
 - [x] Configuração inicial do `.gitignore`.
 - [x] Documentação inicial do projeto no `README.md`.
 
-### Próximas etapas
+### Fase 2 — Pipeline de Machine Learning
 
-- [ ] Realizar a análise exploratória dos dados.
-- [ ] Definir e executar o processo de preparação e integração dos dados.
-- [ ] Treinar e avaliar os modelos de Machine Learning.
+- [x] **Etapa 2.1:** carregamento, diagnóstico e análise exploratória dos dados.
+- [x] **Etapa 2.2:** tratamento e integração dos dados, com construção da variável-alvo.
+- [x] **Etapa 2.3:** pré-processamento e engenharia de atributos.
+- [x] **Etapa 2.4:** divisão dos dados em treino, validação e teste.
+- [ ] **Etapa 2.5:** treinamento e ajuste dos modelos.
+- [ ] **Etapa 2.6:** avaliação comparativa e análise do custo computacional.
+- [ ] **Etapa 2.7:** análise de robustez, generalização e serialização do modelo final.
+
+### Desenvolvimento da aplicação
+
 - [ ] Desenvolver a API com FastAPI.
 - [ ] Desenvolver a interface com Streamlit.
 - [ ] Implementar o armazenamento do histórico de previsões.
 - [ ] Criar e executar os testes automatizados.
 - [ ] Completar a documentação técnica.
+
+## Próximas etapas
+
+A próxima atividade é a **Etapa 2.5 — Treinamento e ajuste dos modelos**. Essa etapa deverá contemplar:
+
+1. Ajustar o pipeline de pré-processamento exclusivamente com `X_train`.
+2. Aplicar as transformações aprendidas aos conjuntos de treino, validação e teste, sem reajustar o pipeline nos conjuntos de validação e teste.
+3. Definir e treinar os modelos de classificação previstos no planejamento.
+4. Utilizar o conjunto de validação para comparar os modelos e orientar o ajuste de hiperparâmetros.
+5. Preservar o conjunto de teste para a avaliação final, evitando utilizá-lo na seleção dos modelos e no ajuste dos hiperparâmetros.
+6. Registrar os experimentos, configurações e resultados para permitir a comparação dos modelos nas etapas posteriores.
+
+A Etapa 2.6 será dedicada à avaliação comparativa dos modelos e à análise do custo computacional. A Etapa 2.7 contemplará a análise de robustez, generalização e serialização do modelo final.
 
 ## Licença
 
