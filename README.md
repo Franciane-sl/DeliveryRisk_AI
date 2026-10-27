@@ -179,7 +179,7 @@ A Fase 2 foi planejada em sete etapas:
 | 2.2 | Tratamento e integração dos dados, com construção da variável-alvo. | Concluída |
 | 2.3 | Pré-processamento e engenharia de atributos. | Concluída |
 | 2.4 | Divisão dos dados em treino, validação e teste. | Concluída |
-| 2.5 | Treinamento e ajuste dos modelos. | Pendente |
+| 2.5 | Treinamento e ajuste dos modelos. | Concluída |
 | 2.6 | Avaliação comparativa e análise do custo computacional. | Pendente |
 | 2.7 | Análise de robustez, generalização e serialização do modelo final. | Pendente |
 
@@ -458,7 +458,145 @@ Essa separação evita que estatísticas de imputação, parâmetros de padroniz
 
 A Etapa 2.4 foi concluída com a implementação e validação da divisão temporal dos dados. Os conjuntos `X_train`, `y_train`, `X_val`, `y_val`, `X_test` e `y_test` estão preparados para serem utilizados nas etapas posteriores.
 
-Não foram realizados treinamento de modelos, ajuste de hiperparâmetros ou avaliação de desempenho nesta etapa. Essas atividades serão desenvolvidas nas etapas seguintes do pipeline.
+Não foram realizados treinamento de modelos, ajuste de hiperparâmetros ou avaliação de desempenho nesta etapa. Essas atividades foram desenvolvidas na Etapa 2.5.
+
+### Etapa 2.5 — Treinamento e ajuste dos modelos
+
+**Status: concluída.**
+
+A etapa teve como objetivo implementar, treinar e comparar diferentes configurações de algoritmos de classificação para identificar pedidos com risco de atraso nas entregas. A avaliação foi realizada com o conjunto de validação, preservando o conjunto de teste para as etapas posteriores.
+
+Foram implementadas funções auxiliares no módulo `pipeline/src/modelos.py` para organizar a criação dos modelos, a construção dos pipelines de pré-processamento, o treinamento, a geração de previsões e o registro dos resultados.
+
+#### Preparação dos modelos
+
+A modelagem utilizou as 24 variáveis preditoras definidas na Etapa 2.3, sendo:
+
+| Tipo de variável | Quantidade |
+|---|---:|
+| Numéricas | 17 |
+| Categóricas | 7 |
+| **Total** | **24** |
+
+O pré-processamento foi integrado aos pipelines dos modelos, com estratégias de imputação, codificação de variáveis categóricas e padronização das variáveis numéricas quando aplicável.
+
+Para a Regressão Logística e o Random Forest, foram avaliadas configurações com e sem ponderação de classes, por meio do parâmetro `class_weight`. Para o Gradient Boosting, foram testadas combinações de quantidade de árvores e taxa de aprendizado.
+
+#### Experimentos realizados
+
+Foram executados 18 experimentos, distribuídos igualmente entre os três algoritmos.
+
+| Algoritmo | Quantidade de configurações | Hiperparâmetros avaliados |
+|---|---:|---|
+| Regressão Logística | 6 | `C`, `class_weight` |
+| Random Forest | 6 | `n_estimators`, `max_depth`, `class_weight` |
+| Gradient Boosting | 6 | `n_estimators`, `learning_rate` |
+| **Total** | **18** | — |
+
+As configurações foram comparadas utilizando acurácia, precisão, recall, F1-score e ROC-AUC. Também foram registrados os tempos de treinamento e predição.
+
+#### Resultados da Regressão Logística
+
+A Regressão Logística apresentou variação de desempenho conforme a regularização e a ponderação de classes utilizadas.
+
+O maior recall foi de **80,02%**, obtido com `C=0.01` e `class_weight="balanced"`. Essa configuração apresentou precisão de 12,92% e F1-score de 0,2225, demonstrando elevada capacidade de identificar pedidos atrasados, mas também uma quantidade significativa de falsos positivos.
+
+O maior F1-score do algoritmo foi de **0,2357**, obtido com `C=1.0` e `class_weight="balanced"`. O maior ROC-AUC foi de 0,6038, observado com `C=0.1` e `class_weight="balanced"`.
+
+Os experimentos demonstraram que a ponderação de classes aumentou o recall em relação às configurações sem ponderação, embora tenha reduzido a acurácia. As configurações sem ponderação apresentaram acurácias elevadas, mas tiveram dificuldade para identificar a classe minoritária.
+
+#### Resultados do Random Forest
+
+O Random Forest apresentou os melhores resultados gerais entre os três algoritmos avaliados.
+
+A melhor configuração foi obtida no Experimento 4, com os seguintes hiperparâmetros:
+
+```python
+{
+    "n_estimators": 100,
+    "max_depth": 10,
+    "class_weight": "balanced"
+}
+```
+
+Os resultados no conjunto de validação foram:
+
+| Métrica | Resultado |
+|---|---:|
+| Acurácia | 68,10% |
+| Precisão | 18,85% |
+| Recall | 51,93% |
+| F1-score | 0,2766 |
+| ROC-AUC | 0,6527 |
+| Tempo de treinamento | 5,13 s |
+| Tempo de predição | 1,15 s |
+
+Essa configuração apresentou o maior F1-score e o maior ROC-AUC entre os 18 experimentos.
+
+Outra configuração, com `n_estimators=200`, `max_depth=5` e `class_weight="balanced"`, apresentou o maior recall do Random Forest, de 60,75%, mas obteve F1-score de 0,2722. Assim, a configuração com 100 árvores e profundidade máxima 10 apresentou o melhor F1-score e a melhor capacidade de discriminação entre as classes, enquanto a configuração com 200 árvores e profundidade máxima 5 identificou uma proporção maior dos pedidos atrasados.
+
+As configurações sem ponderação de classes apresentaram acurácia de aproximadamente 88,26%, mas precisão, recall e F1-score iguais a zero. Esse resultado reforçou a importância de avaliar as métricas específicas da classe minoritária.
+
+#### Resultados do Gradient Boosting
+
+O Gradient Boosting apresentou baixo desempenho na identificação dos pedidos atrasados, apesar de algumas configurações terem alcançado acurácia próxima de 88,26%.
+
+A melhor configuração do algoritmo foi obtida com `n_estimators=200` e `learning_rate=0.1`, apresentando:
+
+| Métrica | Resultado |
+|---|---:|
+| Acurácia | 87,62% |
+| Precisão | 17,73% |
+| Recall | 1,49% |
+| F1-score | 0,0275 |
+| ROC-AUC | 0,6080 |
+| Tempo de treinamento | 185,88 s |
+| Tempo de predição | 1,38 s |
+
+Embora essa configuração tenha apresentado o maior F1-score e ROC-AUC do Gradient Boosting, o recall permaneceu muito baixo. O tempo de treinamento também foi significativamente superior ao dos outros algoritmos.
+
+O aumento da quantidade de árvores elevou o custo computacional sem produzir uma melhoria suficiente na identificação dos pedidos atrasados.
+
+#### Comparação geral dos melhores resultados
+
+A tabela apresenta a melhor configuração de cada algoritmo segundo o F1-score obtido no conjunto de validação.
+
+| Algoritmo | Melhor configuração | Precisão | Recall | F1-score | ROC-AUC | Treinamento |
+|---|---|---:|---:|---:|---:|---:|
+| Regressão Logística | `C=1.0`, `class_weight="balanced"` | 15,19% | 52,55% | 0,2357 | 0,5902 | 6,34 s |
+| Random Forest | `n_estimators=100`, `max_depth=10`, `class_weight="balanced"` | 18,85% | 51,93% | 0,2766 | 0,6527 | 5,13 s |
+| Gradient Boosting | `n_estimators=200`, `learning_rate=0.1` | 17,73% | 1,49% | 0,0275 | 0,6080 | 185,88 s |
+
+A comparação demonstrou que o Random Forest apresentou o melhor equilíbrio entre precisão e recall segundo o F1-score, além do maior ROC-AUC. A Regressão Logística permaneceu como referência útil, especialmente por apresentar configurações com recall elevado. O Gradient Boosting teve desempenho inferior na identificação da classe minoritária e maior custo de treinamento.
+
+A acurácia não foi utilizada como único critério de seleção devido ao desequilíbrio entre as classes.
+
+#### Análise do limiar de classificação
+
+Após a seleção do Random Forest como principal candidato, foi avaliado o impacto de diferentes limiares sobre a classificação dos pedidos como atrasados. A análise utilizou as probabilidades previstas no conjunto de validação.
+
+Os principais resultados foram:
+
+| Limiar | Precisão | Recall | F1-score | Pedidos classificados como atrasados |
+|---:|---:|---:|---:|---:|
+| 0,50 | 18,85% | 51,93% | 0,2766 | 6.648 |
+| 0,45 | 11,94% | 99,38% | 0,2132 | 20.081 |
+| 0,40 | 11,74% | 100,00% | 0,2102 | 20.546 |
+| 0,10 a 0,35 | 11,74% | 100,00% | 0,2102 | 20.550 |
+| 0,55 | 25,56% | 0,95% | 0,0184 | 90 |
+| 0,60 a 0,80 | 0,00% | 0,00% | 0,0000 | 0 |
+
+Entre os limiares testados, **0,50 apresentou o maior F1-score**. A redução do limiar aumentou o recall, mas também elevou consideravelmente a quantidade de pedidos classificados como atrasados, reduzindo a precisão.
+
+O limiar de 0,50 foi mantido como referência inicial. A definição do limiar definitivo dependerá da análise dos custos dos falsos positivos e falsos negativos na Etapa 2.6.
+
+#### Resultado da etapa
+
+A Etapa 2.5 foi concluída com o treinamento e a comparação de 18 configurações de modelos, utilizando o conjunto de validação para orientar a seleção do principal candidato.
+
+O Random Forest com `n_estimators=100`, `max_depth=10` e `class_weight="balanced"` foi selecionado para as avaliações posteriores, por apresentar F1-score de 0,2766 e ROC-AUC de 0,6527, os melhores resultados dessas métricas entre os experimentos realizados.
+
+A seleção ainda é preliminar. O conjunto de teste permanece reservado para a avaliação final, e a definição do limiar de classificação deverá considerar os custos dos erros e os objetivos de negócio.
 
 ## Variável-alvo
 
@@ -512,7 +650,7 @@ A branch ativa e o estado atual do repositório devem ser verificados antes de r
 - [x] **Etapa 2.2:** tratamento e integração dos dados, com construção da variável-alvo.
 - [x] **Etapa 2.3:** pré-processamento e engenharia de atributos.
 - [x] **Etapa 2.4:** divisão dos dados em treino, validação e teste.
-- [ ] **Etapa 2.5:** treinamento e ajuste dos modelos.
+- [x] **Etapa 2.5:** treinamento e ajuste dos modelos.
 - [ ] **Etapa 2.6:** avaliação comparativa e análise do custo computacional.
 - [ ] **Etapa 2.7:** análise de robustez, generalização e serialização do modelo final.
 
@@ -526,16 +664,18 @@ A branch ativa e o estado atual do repositório devem ser verificados antes de r
 
 ## Próximas etapas
 
-A próxima atividade é a **Etapa 2.5 — Treinamento e ajuste dos modelos**. Essa etapa deverá contemplar:
+A próxima atividade é a **Etapa 2.6 — Avaliação comparativa e análise do custo computacional**. Essa etapa deverá contemplar:
 
-1. Ajustar o pipeline de pré-processamento exclusivamente com `X_train`.
-2. Aplicar as transformações aprendidas aos conjuntos de treino, validação e teste, sem reajustar o pipeline nos conjuntos de validação e teste.
-3. Definir e treinar os modelos de classificação previstos no planejamento.
-4. Utilizar o conjunto de validação para comparar os modelos e orientar o ajuste de hiperparâmetros.
-5. Preservar o conjunto de teste para a avaliação final, evitando utilizá-lo na seleção dos modelos e no ajuste dos hiperparâmetros.
-6. Registrar os experimentos, configurações e resultados para permitir a comparação dos modelos nas etapas posteriores.
+1. Consolidar a comparação dos modelos com base nas métricas obtidas na validação.
+2. Analisar os custos associados aos falsos positivos e falsos negativos.
+3. Avaliar a relação entre recall, precisão e quantidade de pedidos sinalizados como atrasados.
+4. Aprofundar a análise dos limiares de classificação, considerando os objetivos de negócio.
+5. Justificar a configuração candidata com base no desempenho e no custo computacional.
+6. Registrar os critérios utilizados para orientar a escolha do modelo e do limiar.
 
-A Etapa 2.6 será dedicada à avaliação comparativa dos modelos e à análise do custo computacional. A Etapa 2.7 contemplará a análise de robustez, generalização e serialização do modelo final.
+A **Etapa 2.7** contemplará a análise de robustez, generalização e serialização do modelo final. Nessa etapa, o conjunto de teste deverá ser utilizado para a avaliação final, sem influenciar as decisões de seleção e ajuste realizadas anteriormente.
+
+Após a conclusão do pipeline de Machine Learning, o desenvolvimento deverá avançar para a integração do modelo com a API, a interface web, o armazenamento do histórico de previsões e os testes automatizados.
 
 ## Licença
 
