@@ -21,9 +21,6 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 
 def definir_configuracoes_modelos():
-    """
-    Define seis configurações de hiperparâmetros para cada modelo.
-    """
 
     return {
         "Logistic Regression": [
@@ -78,9 +75,6 @@ def definir_configuracoes_modelos():
 
 
 def criar_modelo(nome_modelo, parametros, random_state=42):
-    """
-    Cria um estimador com os hiperparâmetros informados.
-    """
 
     if nome_modelo == "Logistic Regression":
         return LogisticRegression(
@@ -116,13 +110,7 @@ def criar_pipeline_modelo(
     colunas_categoricas,
     random_state=42,
 ):
-    """
-    Cria o pipeline de pré-processamento e treinamento.
-
-    Para Gradient Boosting, agrupa categorias pouco frequentes
-    e utiliza codificação densa para compatibilidade com o estimador.
-    Os demais modelos utilizam escalonamento das variáveis numéricas.
-    """
+    
 
     if nome_modelo == "Gradient Boosting":
         transformador_numerico = Pipeline(
@@ -199,10 +187,7 @@ def criar_pipeline_modelo(
 
 
 def treinar_modelo(modelo, X_treino, y_treino):
-    """
-    Treina o pipeline e mede o tempo de treinamento.
-    """
-
+    
     if not X_treino.index.equals(y_treino.index):
         raise ValueError(
             "Os índices de X_treino e y_treino não estão alinhados."
@@ -218,9 +203,6 @@ def treinar_modelo(modelo, X_treino, y_treino):
 
 
 def prever_modelo(modelo, X):
-    """
-    Gera previsões e probabilidades, medindo o tempo de predição.
-    """
 
     inicio = time.perf_counter()
 
@@ -243,12 +225,6 @@ def executar_experimentos(
     colunas_categoricas,
     random_state=42,
 ):
-    """
-    Executa sequencialmente as configurações de um único modelo.
-
-    Utiliza o conjunto de treino para ajuste e o conjunto de
-    validação para avaliação. O conjunto de teste não é utilizado.
-    """
 
     if not X_train.index.equals(y_train.index):
         raise ValueError("Os índices de treino não estão alinhados.")
@@ -352,9 +328,7 @@ def executar_experimentos(
 
 
 def registrar_resultados(resultados):
-    """
-    Organiza os resultados em uma tabela, sem expor os objetos Pipeline.
-    """
+   
 
     if not resultados:
         raise ValueError("A lista de resultados está vazia.")
