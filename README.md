@@ -63,18 +63,14 @@ DeliveryRisk_AI/
 │   │   ├── avaliacao.py
 │   │   └── robustez.py
 │   ├── notebooks/
-│   │   └── delivery_risk_analysis.ipynb
-│   └── scripts/
-│       ├── preparar_dados.py
-│       ├── treinar_modelos.py
-│       └── avaliar_modelos.py
+│       └── delivery_risk_analysis.ipynb
+│
 ├── data/
 │   ├── raw/
 │   └── processed/
 ├── models/
 ├── images/
 │   ├── eda/
-│   ├── distribuicao_dados/
 │   ├── matrizes_de_confusao/
 │   └── avaliacao_modelos/
 ├── reports/
@@ -180,7 +176,7 @@ A Fase 2 foi planejada em sete etapas:
 | 2.3 | Pré-processamento e engenharia de atributos. | Concluída |
 | 2.4 | Divisão dos dados em treino, validação e teste. | Concluída |
 | 2.5 | Treinamento e ajuste dos modelos. | Concluída |
-| 2.6 | Avaliação comparativa e análise do custo computacional. | Pendente |
+| 2.6 | Avaliação comparativa e análise do custo computacional. | Concluída |
 | 2.7 | Análise de robustez, generalização e serialização do modelo final. | Pendente |
 
 ### Etapa 2.1 — Carregamento, diagnóstico e análise exploratória dos dados (EDA)
@@ -598,6 +594,169 @@ O Random Forest com `n_estimators=100`, `max_depth=10` e `class_weight="balanced
 
 A seleção ainda é preliminar. O conjunto de teste permanece reservado para a avaliação final, e a definição do limiar de classificação deverá considerar os custos dos erros e os objetivos de negócio.
 
+### Etapa 2.6 — Avaliação comparativa dos modelos
+
+**Status: concluída.**
+
+A etapa teve como objetivo consolidar e comparar os resultados dos experimentos realizados na Etapa 2.5, identificando o modelo candidato mais adequado para a previsão de atrasos nas entregas.
+
+A avaliação considerou métricas preditivas, matrizes de confusão, análise dos erros de classificação, desempenho computacional, tamanho dos modelos e consumo de memória.
+
+Todas as análises foram realizadas utilizando o conjunto de validação. O conjunto de teste permaneceu reservado para a avaliação final da Etapa 2.7.
+
+#### Consolidação dos experimentos
+
+Foram consolidados os resultados dos 18 experimentos realizados anteriormente:
+
+- 6 experimentos de Regressão Logística.
+- 6 experimentos de Random Forest.
+- 6 experimentos de Gradient Boosting.
+
+O F1-score foi utilizado como principal critério de comparação, por combinar Precision e Recall e ser adequado à avaliação de problemas com classes desbalanceadas.
+
+#### Comparação dos melhores experimentos
+
+Foi identificado o melhor experimento de cada algoritmo com base no F1-score obtido na validação.
+
+| Algoritmo | Experimento | Accuracy | Precision | Recall | F1-score | ROC-AUC |
+|---|---:|---:|---:|---:|---:|---:|
+| Random Forest | 4 | 68,10% | 18,85% | 51,93% | 0,2766 | 0,6527 |
+| Logistic Regression | 5 | 59,99% | 15,19% | 52,55% | 0,2357 | 0,5902 |
+| Gradient Boosting | 6 | 87,62% | 17,73% | 1,49% | 0,0275 | 0,6080 |
+
+O Random Forest apresentou o maior F1-score e ROC-AUC entre os três melhores experimentos.
+
+A Regressão Logística apresentou Recall ligeiramente superior, enquanto o Gradient Boosting demonstrou dificuldade para identificar os pedidos atrasados, apesar de sua elevada acurácia.
+
+#### Matrizes de confusão
+
+Foram geradas matrizes de confusão para os melhores experimentos de cada algoritmo, utilizando as previsões sobre o conjunto de validação.
+
+| Modelo | Verdadeiros negativos | Falsos positivos | Falsos negativos | Verdadeiros positivos |
+|---|---:|---:|---:|---:|
+| Random Forest — Exp. 4 | 12.742 | 5.395 | 1.160 | 1.253 |
+| Logistic Regression — Exp. 5 | 11.060 | 7.077 | 1.145 | 1.268 |
+| Gradient Boosting — Exp. 6 | 17.970 | 167 | 2.377 | 36 |
+
+As matrizes foram salvas no diretório `images/matrizes_de_confusao/`.
+
+O Random Forest identificou 1.253 pedidos atrasados, mas também apresentou 5.395 falsos positivos. A Regressão Logística identificou 1.268 pedidos atrasados, com 7.077 falsos positivos.
+
+O Gradient Boosting apresentou poucos falsos positivos, mas deixou de identificar 2.377 pedidos que realmente atrasaram.
+
+#### Análise de falsos positivos e falsos negativos
+
+A análise dos erros permitiu observar o comportamento dos modelos diante dos dois tipos de classificação incorreta:
+
+- **Falso positivo:** pedido classificado como atrasado que não apresentou atraso.
+- **Falso negativo:** pedido que apresentou atraso, mas não foi identificado pelo modelo.
+
+O Random Forest apresentou um equilíbrio entre os dois tipos de erro em comparação aos demais algoritmos.
+
+A Regressão Logística apresentou quantidade próxima de falsos negativos, mas maior quantidade de falsos positivos.
+
+O Gradient Boosting apresentou a menor quantidade de falsos positivos, porém o maior número de falsos negativos.
+
+Como não foram definidos pesos financeiros ou operacionais para cada tipo de erro, a análise foi realizada considerando suas quantidades, sem atribuição de custos monetários.
+
+#### Desempenho computacional
+
+O desempenho computacional foi avaliado considerando os 20.550 pedidos do conjunto de validação.
+
+Foram comparados o tempo de treinamento, o tempo de predição, a latência média por pedido e a quantidade aproximada de pedidos processados por segundo.
+
+| Modelo | Treinamento (s) | Predição (s) | Latência (ms/pedido) | Pedidos/s |
+|---|---:|---:|---:|---:|
+| Random Forest — Exp. 4 | 4,22 | 1,04 | 0,0507 | 19.738 |
+| Logistic Regression — Exp. 5 | 8,51 | 0,83 | 0,0406 | 24.615 |
+| Gradient Boosting — Exp. 6 | 176,75 | 1,87 | 0,0910 | 10.993 |
+
+A Regressão Logística apresentou a menor latência e a maior vazão aproximada.
+
+O Random Forest apresentou o menor tempo de treinamento entre os três modelos, com desempenho de predição próximo ao da Regressão Logística.
+
+O Gradient Boosting apresentou o maior tempo de treinamento e predição, além da menor vazão.
+
+#### Tamanho dos modelos
+
+O tamanho dos pipelines treinados foi medido por meio da serialização temporária em formato Joblib.
+
+| Modelo | Tamanho |
+|---|---:|
+| Random Forest — Exp. 4 | 1,5548 MB |
+| Logistic Regression — Exp. 5 | 0,2396 MB |
+| Gradient Boosting — Exp. 6 | 0,6256 MB |
+
+A Regressão Logística apresentou o menor tamanho, enquanto o Random Forest apresentou o maior. Todos os modelos permaneceram abaixo de 2 MB.
+
+#### Consumo de memória
+
+O pico de memória foi medido durante a execução da predição sobre o conjunto de validação, utilizando `tracemalloc`.
+
+| Modelo | Pico de memória rastreada |
+|---|---:|
+| Random Forest — Exp. 4 | 17,7755 MB |
+| Logistic Regression — Exp. 5 | 17,7705 MB |
+| Gradient Boosting — Exp. 6 | 27,9407 MB |
+
+O Random Forest e a Regressão Logística apresentaram consumo praticamente igual. O Gradient Boosting apresentou o maior pico de memória.
+
+Essa medição representa a memória rastreada pelo `tracemalloc`, não necessariamente o consumo total de RAM do processo, pois algumas alocações internas de bibliotecas nativas podem não ser contabilizadas.
+
+#### Seleção do modelo candidato
+
+A seleção foi realizada considerando o F1-score dos 18 experimentos, sem estabelecer um limite mínimo de Recall.
+
+O modelo selecionado foi:
+
+**Random Forest — Experimento 4**
+
+Hiperparâmetros:
+
+```python
+{
+    "n_estimators": 100,
+    "max_depth": 10,
+    "class_weight": "balanced"
+}
+```
+
+Resultados na validação:
+
+| Métrica | Resultado |
+|---|---:|
+| Accuracy | 68,10% |
+| Precision | 18,85% |
+| Recall | 51,93% |
+| F1-score | 0,2766 |
+| ROC-AUC | 0,6527 |
+
+O Random Forest foi selecionado por apresentar o maior F1-score entre os 18 experimentos, além do maior ROC-AUC entre os melhores experimentos dos três algoritmos.
+
+Apesar da seleção, o modelo ainda apresenta limitações: sua Precision foi de 18,85%, seu Recall foi de 51,93% e foram registrados 5.395 falsos positivos e 1.160 falsos negativos na validação.
+
+Portanto, a escolha representa uma seleção preliminar para a avaliação final, não uma aprovação para produção.
+
+#### Salvamento dos resultados
+
+Os resultados da avaliação foram salvos em `reports/metrics/`:
+
+| Arquivo | Descrição |
+|---|---|
+| `comparacao_experimentos.csv` | Resultados dos 18 experimentos. |
+| `melhores_modelos.csv` | Melhores experimentos de cada algoritmo. |
+| `desempenho_computacional.csv` | Tempos, latência e vazão dos experimentos. |
+
+As matrizes de confusão foram armazenadas separadamente em `images/matrizes_de_confusao/`.
+
+#### Resultado da etapa
+
+A Etapa 2.6 foi concluída com a comparação dos 18 experimentos, análise dos erros de classificação, avaliação do desempenho computacional e seleção do Random Forest — Experimento 4 como modelo candidato.
+
+O modelo apresentou F1-score de 0,2766 e ROC-AUC de 0,6527 na validação, além de desempenho computacional e tamanho adequados para prosseguir com a avaliação.
+
+O conjunto de teste não foi utilizado nesta etapa, permanecendo reservado para a avaliação final na Etapa 2.7.
+
 ## Variável-alvo
 
 A variável-alvo `delivery_delayed` identifica se um pedido foi entregue após a data estimada:
@@ -651,7 +810,7 @@ A branch ativa e o estado atual do repositório devem ser verificados antes de r
 - [x] **Etapa 2.3:** pré-processamento e engenharia de atributos.
 - [x] **Etapa 2.4:** divisão dos dados em treino, validação e teste.
 - [x] **Etapa 2.5:** treinamento e ajuste dos modelos.
-- [ ] **Etapa 2.6:** avaliação comparativa e análise do custo computacional.
+- [x] **Etapa 2.6:** avaliação comparativa e análise do custo computacional.
 - [ ] **Etapa 2.7:** análise de robustez, generalização e serialização do modelo final.
 
 ### Desenvolvimento da aplicação
@@ -664,18 +823,20 @@ A branch ativa e o estado atual do repositório devem ser verificados antes de r
 
 ## Próximas etapas
 
-A próxima atividade é a **Etapa 2.6 — Avaliação comparativa e análise do custo computacional**. Essa etapa deverá contemplar:
+## Próximas etapas
 
-1. Consolidar a comparação dos modelos com base nas métricas obtidas na validação.
-2. Analisar os custos associados aos falsos positivos e falsos negativos.
-3. Avaliar a relação entre recall, precisão e quantidade de pedidos sinalizados como atrasados.
-4. Aprofundar a análise dos limiares de classificação, considerando os objetivos de negócio.
-5. Justificar a configuração candidata com base no desempenho e no custo computacional.
-6. Registrar os critérios utilizados para orientar a escolha do modelo e do limiar.
+A próxima atividade é a **Etapa 2.7 — Análise de robustez, generalização e serialização do modelo final**.
 
-A **Etapa 2.7** contemplará a análise de robustez, generalização e serialização do modelo final. Nessa etapa, o conjunto de teste deverá ser utilizado para a avaliação final, sem influenciar as decisões de seleção e ajuste realizadas anteriormente.
+Essa etapa deverá contemplar:
 
-Após a conclusão do pipeline de Machine Learning, o desenvolvimento deverá avançar para a integração do modelo com a API, a interface web, o armazenamento do histórico de previsões e os testes automatizados.
+1. Avaliar o modelo candidato no conjunto de teste, que permaneceu reservado durante as etapas anteriores.
+2. Analisar sua capacidade de generalização em dados de um período posterior ao treinamento e à validação.
+3. Comparar os resultados finais com os resultados obtidos na validação.
+4. Investigar a estabilidade do modelo e possíveis limitações de desempenho.
+5. Confirmar a configuração final do modelo e o limiar de classificação, conforme os critérios definidos.
+6. Serializar o modelo final para utilização nas etapas de integração.
+
+Após a conclusão da Fase 2, o desenvolvimento deverá avançar para a integração do modelo com a API REST utilizando FastAPI, a interface web com Streamlit, o armazenamento do histórico de previsões e os testes automatizados.
 
 ## Licença
 
