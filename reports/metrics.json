@@ -1,0 +1,143 @@
+{
+    "projeto": "DeliveryRisk AI",
+    "etapa": "2.7 - Robustez, generalização e serialização",
+    "modelo_selecionado": {
+        "algoritmo": "Random Forest",
+        "experimento": 4,
+        "hiperparametros": {
+            "n_estimators": 100,
+            "max_depth": 10,
+            "class_weight": "balanced"
+        },
+        "criterio_selecao": "Maior F1-score na validação",
+        "limiar_classificacao": 0.5
+    },
+    "avaliacao_validacao": {
+        "accuracy": 0.6810218978102189,
+        "precision": 0.1884777376654633,
+        "recall": 0.5192706174886034,
+        "f1": 0.27656991502041717,
+        "roc_auc": 0.6527077798368502
+    },
+    "avaliacao_teste": {
+        "accuracy": 0.6665591571251949,
+        "precision": 0.0463773188659433,
+        "recall": 0.26005888125613347,
+        "f1": 0.07871676815683945,
+        "verdadeiros_negativos": 12135,
+        "falsos_positivos": 5449,
+        "falsos_negativos": 754,
+        "verdadeiros_positivos": 265,
+        "roc_auc": 0.4265542778652375,
+        "quantidade_registros": 18603,
+        "periodo_inicial": "2018-06-01 00:39:55",
+        "periodo_final": "2018-08-29 15:00:37",
+        "tempo_predicao_s": 1.2612801999785006
+    },
+    "analise_erros": {
+        "total_registros": 18603,
+        "acertos": 12400,
+        "erros": 6203,
+        "verdadeiros_negativos": 12135,
+        "falsos_positivos": 5449,
+        "falsos_negativos": 754,
+        "verdadeiros_positivos": 265,
+        "percentual_acertos": 66.65591571251949,
+        "percentual_erros": 33.34408428748051,
+        "percentual_falsos_positivos": 29.290974573993445,
+        "percentual_falsos_negativos": 4.053109713487072
+    },
+    "comparacao_generalizacao": [
+        {
+            "metrica": "accuracy",
+            "validacao": 0.6810218978102189,
+            "teste": 0.6665591571251949,
+            "diferenca_absoluta": -0.014462740685024067,
+            "diferenca_percentual": -2.123682179901712
+        },
+        {
+            "metrica": "precision",
+            "validacao": 0.1884777376654633,
+            "teste": 0.0463773188659433,
+            "diferenca_absoluta": -0.14210041879952,
+            "diferenca_percentual": -75.39374175412682
+        },
+        {
+            "metrica": "recall",
+            "validacao": 0.5192706174886034,
+            "teste": 0.26005888125613347,
+            "diferenca_absoluta": -0.2592117362324699,
+            "diferenca_percentual": -49.918429331919384
+        },
+        {
+            "metrica": "f1",
+            "validacao": 0.27656991502041717,
+            "teste": 0.07871676815683945,
+            "diferenca_absoluta": -0.19785314686357772,
+            "diferenca_percentual": -71.53820286236542
+        },
+        {
+            "metrica": "roc_auc",
+            "validacao": 0.6527077798368502,
+            "teste": 0.4265542778652375,
+            "diferenca_absoluta": -0.22615350197161277,
+            "diferenca_percentual": -34.648507181596905
+        }
+    ],
+    "robustez_temporal": [
+        {
+            "periodo": 1,
+            "data_inicio": "2018-06-01T00:39:55",
+            "data_fim": "2018-07-01T20:07:18",
+            "quantidade_pedidos": 6201,
+            "taxa_atraso_real": 1.3384937913239798,
+            "accuracy": 0.6844057410095146,
+            "precision": 0.0262891809908999,
+            "recall": 0.6265060240963856,
+            "f1": 0.050460941290635615,
+            "verdadeiros_negativos": 4192,
+            "falsos_positivos": 1926,
+            "falsos_negativos": 31,
+            "verdadeiros_positivos": 52,
+            "roc_auc": 0.6619731623453605
+        },
+        {
+            "periodo": 2,
+            "data_inicio": "2018-07-01T20:10:36",
+            "data_fim": "2018-08-01T16:21:39",
+            "quantidade_pedidos": 6201,
+            "taxa_atraso_real": 4.725044347685857,
+            "accuracy": 0.6500564425092727,
+            "precision": 0.055002370791844474,
+            "recall": 0.39590443686006827,
+            "f1": 0.09658617818484597,
+            "verdadeiros_negativos": 3915,
+            "falsos_positivos": 1993,
+            "falsos_negativos": 177,
+            "verdadeiros_positivos": 116,
+            "roc_auc": 0.5190263794565592
+        },
+        {
+            "periodo": 3,
+            "data_inicio": "2018-08-01T16:26:22",
+            "data_fim": "2018-08-29T15:00:37",
+            "quantidade_pedidos": 6201,
+            "taxa_atraso_real": 10.369295274955652,
+            "accuracy": 0.6648927592323819,
+            "precision": 0.05900430239704978,
+            "recall": 0.14930015552099535,
+            "f1": 0.08458149779735682,
+            "verdadeiros_negativos": 4027,
+            "falsos_positivos": 1531,
+            "falsos_negativos": 547,
+            "verdadeiros_positivos": 96,
+            "roc_auc": 0.3650872154354728
+        }
+    ],
+    "serializacao": {
+        "arquivo": "models/delivery_risk_pipeline.joblib",
+        "tamanho_mb": 1.5548200607299805,
+        "previsoes_preservadas": true,
+        "probabilidades_preservadas": true
+    }
+}
