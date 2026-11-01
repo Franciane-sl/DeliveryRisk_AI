@@ -185,12 +185,7 @@ def resumir_qualidade_dados(
     df,
     nome_dataset="dataset"
 ):
-    """
-    Resume dimensões, tipos, ausências e duplicatas do DataFrame.
-
-    Retorna um dicionário com indicadores gerais e um DataFrame
-    com o detalhamento por coluna.
-    """
+    
     resumo_geral = {
         "dataset": nome_dataset,
         "total_linhas": len(df),
