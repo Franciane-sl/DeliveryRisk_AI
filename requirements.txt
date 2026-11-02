@@ -1,4 +1,3 @@
-
 # Análise e manipulação de dados
 pandas==3.0.6
 numpy==2.5.4
@@ -20,6 +19,7 @@ ipykernel==7.4.0
 fastapi==0.144.0
 uvicorn[standard]==0.54.0
 pydantic==2.14.1
+colorlog==6.12.0
 
 # Frontend
 streamlit==1.66.0
@@ -28,6 +28,7 @@ requests==2.34.2
 # Testes
 pytest==9.1.1
 httpx==0.28.1
+httpx2==2.16.0
 
 # Configuração de ambiente
 python-dotenv==1.2.4
