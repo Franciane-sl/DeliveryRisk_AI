@@ -6,7 +6,7 @@ O **DeliveryRisk AI** é um projeto de Machine Learning que tem como objetivo de
 
 O projeto utiliza o **Brazilian E-Commerce Public Dataset by Olist** para analisar dados históricos, preparar informações, treinar e avaliar modelos preditivos e disponibilizar previsões por meio de uma API REST.
 
-A solução está sendo desenvolvida em etapas, desde a análise exploratória e preparação dos dados até a modelagem, avaliação, integração com o backend e desenvolvimento da interface web.
+A solução foi desenvolvida em etapas, desde a análise exploratória e preparação dos dados até a modelagem, avaliação, integração com o backend e desenvolvimento da interface web.
 
 ## Objetivo
 
@@ -37,118 +37,96 @@ As versões das dependências estão registradas em `requirements.txt`.
 
 ```text
 DeliveryRisk_AI/
-│
 ├── backend/
 │   ├── core/
 │   │   ├── exception_handlers.py
 │   │   └── logging_config.py
-│   │
 │   ├── database/
 │   │   ├── connection.py
 │   │   └── models.py
-│   │
 │   ├── repositories/
 │   │   └── prediction_repository.py
-│   │
 │   ├── routers/
 │   │   ├── health.py
 │   │   ├── history.py
 │   │   ├── metrics.py
 │   │   └── predictions.py
-│   │
 │   ├── services/
 │   │   ├── history_service.py
 │   │   ├── metrics_service.py
 │   │   └── prediction_service.py
-│   │
 │   ├── dependencies.py
 │   ├── main.py
 │   └── schemas.py
-│
-├── frontend/
-│   ├── pages/
-│   ├── components/
-│   ├── utils/
-│   ├── streamlit_app.py
-│   ├── api_client.py
-│   └── config.py
-│
-├── pipeline/
-│   ├── src/
-│   │   ├── carregamento.py
-│   │   ├── analise_exploratoria.py
-│   │   ├── tratamento.py
-│   │   ├── integracao_dados.py
-│   │   ├── feature_engineering.py
-│   │   ├── preparacao_modelo.py
-│   │   ├── modelos.py
-│   │   ├── avaliacao.py
-│   │   └── robustez.py
-│   │
-│   └── notebooks/
-│       └── delivery_risk_analysis.ipynb
-│
 ├── data/
 │   ├── raw/
-│   └── processed/
-│       └── base_integrada.parquet
-│
+│   ├── processed/
+│   │   └── base_integrada.parquet
+│   └── delivery_risk.db
+├── docs/
+├── frontend/
+│   ├── components/
+│   │   ├── charts.py
+│   │   ├── metric_cards.py
+│   │   ├── prediction_result.py
+│   │   └── sidebar.py
+│   ├── pages/
+│   │   ├── historico.py
+│   │   ├── nova_Previsao.py
+│   │   └── visao_Geral.py
+│   ├── utils/
+│   │   ├── formatters.py
+│   │   └── validators.py
+│   ├── api_client.py
+│   ├── config.py
+│   └── streamlit_app.py
+├── images/
+│   ├── avaliacao_modelos/
+│   ├── eda/
+│   └── matrizes_de_confusao/
 ├── models/
 │   └── delivery_risk_pipeline.joblib
-│
-├── images/
-│   ├── eda/
-│   ├── matrizes_de_confusao/
-│   └── avaliacao_modelos/
-│
+├── pipeline/
+│   ├── notebooks/
+│   │   └── delivery_risk_analysis.ipynb
+│   └── src/
+│       ├── analise_exploratoria.py
+│       ├── avaliacao.py
+│       ├── carregamento.py
+│       ├── feature_engineering.py
+│       ├── integracao_dados.py
+│       ├── modelos.py
+│       ├── preparacao_modelo.py
+│       ├── robustez.py
+│       └── tratamento.py
 ├── reports/
+│   ├── metrics/
 │   └── metrics.json
-│
-├── logs/
-│
 ├── tests/
-│   ├── integration/
-│   │   ├── test_health.py
-│   │   ├── test_history.py
-│   │   ├── test_metrics.py
-│   │   └── test_predictions.py
-│   │
-│   ├── unit/
-│   │   ├── test_metrics_service.py
-│   │   ├── test_prediction_repository.py
-│   │   ├── test_prediction_service.py
-│   │   └── test_schemas.py
-│   │
-│   └── conftest.py
-│
-├── docs/
+│   ├── tests_backend/
+│   │   ├── integration/
+│   │   └── unit/
+│   └── tests_frontend/
+│       ├── integration/
+│       └── unit/
 ├── .gitignore
 ├── requirements.txt
-├── README.md
-└── LICENSE
+└── README.md
 ```
 
-A estrutura está organizada para separar as responsabilidades:
+A estrutura separa as responsabilidades do projeto:
 
-- `backend/`: implementação da API REST.
-- `backend/core/`: configurações centrais, logging e tratamento de exceções.
-- `backend/database/`: conexão e estrutura do banco de dados.
-- `backend/repositories/`: operações de persistência e acesso aos dados.
-- `backend/routers/`: definição dos endpoints da API.
-- `backend/services/`: regras de negócio e processamento das solicitações.
-- `backend/schemas.py`: modelos Pydantic para validação e estruturação dos dados.
-- `frontend/`: estrutura destinada à interface web com Streamlit.
-- `pipeline/`: módulos e notebook destinados ao processamento dos dados e à modelagem.
-- `data/raw/`: arquivos originais do conjunto de dados.
-- `data/processed/`: dados processados e integrados.
-- `models/`: modelos e pipelines treinados e serializados.
-- `images/`: visualizações e gráficos produzidos durante as análises.
-- `reports/`: relatórios consolidados de métricas.
-- `logs/`: arquivos de registro da aplicação.
-- `tests/`: testes automatizados unitários e de integração.
-- `docs/`: documentação técnica do projeto.
+- `backend/`: API REST desenvolvida com FastAPI.
+- `frontend/`: interface web desenvolvida com Streamlit.
+- `pipeline/`: módulos de carregamento, análise, tratamento, integração, engenharia de atributos, preparação, treinamento, avaliação e robustez.
+- `data/raw/`: datasets originais do Olist.
+- `data/processed/`: base integrada utilizada no desenvolvimento do modelo.
+- `models/`: pipeline de Machine Learning serializado.
+- `reports/`: métricas e resultados dos experimentos.
+- `images/`: gráficos da EDA, matrizes de confusão e avaliação dos modelos.
+- `tests/`: testes unitários e de integração do backend e frontend.
+- `docs/`: diretório reservado para documentação complementar.
 
-A estrutura do frontend representa a organização planejada. Sua implementação funcional ainda não está concluída.
 
 ## Base de dados
 
@@ -854,385 +832,277 @@ Com a conclusão da Etapa 2.7, encerra-se a **Fase 2 — Desenvolvimento do pipe
 
 # Fase 3 — Desenvolvimento da API com FastAPI
 
-**Status: implementação concluída; testes automatizados aprovados.**
+**Status: implementação concluída e testes automatizados aprovados.**
 
-A Fase 3 tem como objetivo disponibilizar o pipeline de Machine Learning por meio de uma API REST, permitindo receber dados de pedidos, realizar previsões de risco de atraso e armazenar o histórico das solicitações.
+A API disponibiliza o pipeline de Machine Learning por meio de endpoints REST. Sua arquitetura separa validação, rotas HTTP, regras de negócio, persistência e configurações centrais.
 
-A API foi desenvolvida com FastAPI, utilizando uma arquitetura modular em camadas para separar validação, regras de negócio, persistência e rotas HTTP.
+## Arquitetura do backend
 
-## Arquitetura modular
-
-O backend foi organizado nas seguintes camadas:
-
-| Camada | Responsabilidade |
+| Diretório/arquivo | Responsabilidade |
 |---|---|
-| `schemas.py` | Definição dos modelos Pydantic para validação e estruturação dos dados de entrada e saída. |
-| `routers/` | Definição dos endpoints e recebimento das requisições HTTP. |
-| `services/` | Implementação das regras de negócio e execução das operações. |
-| `repositories/` | Acesso e persistência dos dados. |
-| `database/` | Conexão e estrutura do banco de dados SQLite. |
-| `core/` | Configurações centrais, logging e tratamento global de exceções. |
-| `dependencies.py` | Organização das dependências utilizadas pela aplicação. |
-| `main.py` | Criação da aplicação, inicialização e integração dos componentes. |
+| `backend/schemas.py` | Modelos Pydantic para validação dos dados de entrada e saída. |
+| `backend/routers/` | Endpoints de saúde, previsão, histórico e métricas. |
+| `backend/services/` | Regras de negócio para previsão, histórico e métricas. |
+| `backend/repositories/` | Operações de persistência e consulta. |
+| `backend/database/` | Conexão e estrutura do banco SQLite. |
+| `backend/core/` | Logging e tratamento global de exceções. |
+| `backend/dependencies.py` | Disponibilização das dependências da aplicação. |
+| `backend/main.py` | Criação da aplicação e ciclo de vida. |
 
-Essa separação evita concentrar toda a implementação em um único arquivo e facilita a manutenção e a evolução do backend.
+Durante a inicialização, o `lifespan` cria/prepara a tabela de previsões, verifica a existência do arquivo `models/delivery_risk_pipeline.joblib` e carrega o pipeline uma única vez em `app.state.pipeline`. A referência é liberada no encerramento da aplicação.
 
-## Inicialização e carregamento do modelo
+O endpoint de previsão recebe as 24 variáveis preditoras definidas na etapa de engenharia de atributos. O schema utiliza validação estrita, rejeita campos extras e impede valores infinitos ou NaN. Após a validação, o serviço monta os dados para o pipeline, executa a classificação e obtém a probabilidade estimada da classe de atraso. O resultado é persistido no SQLite.
 
-A aplicação utiliza `@asynccontextmanager` com `lifespan` para controlar sua inicialização e encerramento.
+## Persistência, logs e exceções
 
-Durante a inicialização:
+O histórico é armazenado em SQLite. A camada de repositório concentra o acesso aos registros, enquanto os serviços organizam as operações utilizadas pelas rotas.
 
-1. O sistema configura o logging.
-2. A conexão e a estrutura do banco de dados são preparadas.
-3. A existência do arquivo `models/delivery_risk_pipeline.joblib` é verificada.
-4. O pipeline completo é carregado utilizando Joblib.
-5. O modelo fica disponível em `app.state.pipeline` para utilização pelos serviços.
+O logging utiliza `RotatingFileHandler`, com arquivo `logs/delivery_risk.log`, rotação de 10 MB e até 30 arquivos de backup. A saída no terminal utiliza Colorlog. A pasta `logs/` é ignorada pelo Git.
 
-O pipeline é carregado uma única vez durante a inicialização da aplicação, evitando recarregá-lo a cada requisição.
+Handlers globais padronizam respostas para erros HTTP, erros de validação e exceções não tratadas.
 
-Durante o encerramento, a referência ao pipeline é liberada.
+## Endpoints
 
-## Validação dos dados
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/health` | Informa o estado da API e se o pipeline está carregado. |
+| POST | `/predict` | Valida os dados, realiza a previsão e registra o resultado no histórico. |
+| GET | `/predictions` | Lista as previsões registradas. |
+| GET | `/predictions/{prediction_id}` | Consulta uma previsão pelo identificador. |
+| DELETE | `/predictions/{prediction_id}` | Exclui uma previsão do histórico. |
+| GET | `/metrics` | Retorna o relatório consolidado de métricas do modelo. |
 
-Os modelos Pydantic são utilizados para validar os dados recebidos pela API.
+A documentação interativa é disponibilizada pelo FastAPI em `/docs` (Swagger UI) e `/redoc` (ReDoc).
 
-A entrada da previsão corresponde às 24 variáveis preditoras definidas durante a Etapa 2.3 do pipeline de Machine Learning.
+# Fase 4 — Frontend com Streamlit
 
-A validação ocorre antes da execução do modelo, verificando os tipos e as restrições estabelecidas nos schemas.
+**Status: implementação concluída e validada por testes automatizados e execução integrada.**
 
-Requisições com dados inválidos são rejeitadas com HTTP 422.
+A interface Streamlit foi desenvolvida como uma camada de apresentação para consumir a API. O frontend não carrega o modelo de Machine Learning, não importa o pipeline e não acessa diretamente o banco SQLite. Todas as operações de previsão, consulta e exclusão são realizadas por meio dos endpoints do backend.
 
-## Serviço de previsão
+## Páginas da aplicação
 
-O módulo `backend/services/prediction_service.py` concentra a execução das previsões.
+### Visão geral
 
-O serviço:
+Apresenta indicadores calculados a partir do histórico retornado pela API:
 
-- Recebe os dados validados.
-- Organiza os atributos em um DataFrame do Pandas.
-- Executa `predict()` para obter a classe prevista.
-- Executa `predict_proba()` para obter a probabilidade associada à classe de atraso.
-- Identifica a classe positiva por meio de `pipeline.classes_`.
-- Retorna o resultado estruturado para o router.
+- Total de previsões realizadas.
+- Quantidade de previsões classificadas como atraso.
+- Quantidade de previsões classificadas sem atraso.
+- Probabilidade média de atraso.
 
-A classe positiva representa o pedido classificado como atrasado.
+Também apresenta gráficos de distribuição das classificações, distribuição das probabilidades e evolução temporal das previsões. A página exibe um aviso sobre o caráter experimental e as limitações de generalização do modelo.
 
-## Histórico de previsões
+### Nova previsão
 
-O armazenamento do histórico utiliza SQLite.
+Disponibiliza um formulário dividido em seções para informar as características do pedido:
 
-A implementação está dividida entre:
+- Informações gerais e quantidades de itens, produtos, vendedores e categorias.
+- Valores, frete e dimensões médias dos produtos.
+- Data e horário da compra.
+- Informações geográficas do cliente e dos vendedores.
+- Categoria de produto mais frequente.
 
-- `backend/database/connection.py`: conexão com o banco.
-- `backend/database/models.py`: estrutura dos registros.
-- `backend/repositories/prediction_repository.py`: operações de persistência e consulta.
-- `backend/services/history_service.py`: organização das operações de histórico.
+Os dados são verificados no frontend e enviados ao endpoint `POST /predict`. O resultado apresenta a classificação, a probabilidade estimada de atraso e o identificador da previsão registrada.
 
-As previsões são armazenadas juntamente com os dados de entrada e as informações do resultado.
+### Histórico
 
-## Logging e tratamento de exceções
+Permite consultar as previsões armazenadas pela API, visualizar indicadores, selecionar um registro para consultar seus detalhes, visualizar os dados de entrada utilizados e excluir uma previsão após confirmação.
 
-A aplicação possui configuração centralizada de logging em `backend/core/logging_config.py`.
+## Organização do frontend
 
-O sistema utiliza:
+| Arquivo/diretório | Responsabilidade |
+|---|---|
+| `frontend/streamlit_app.py` | Configuração visual e navegação entre páginas. |
+| `frontend/pages/` | Implementação das páginas Visão geral, Nova previsão e Histórico. |
+| `frontend/components/` | Componentes reutilizáveis para gráficos, cartões de métricas, resultado da previsão e barra lateral. |
+| `frontend/utils/` | Funções de validação e formatação. |
+| `frontend/api_client.py` | Cliente HTTP centralizado para comunicação com a API. |
+| `frontend/config.py` | Título, layout, ícone, status do modelo e URL base da API. |
 
-- `RotatingFileHandler` para armazenamento dos logs.
-- Arquivo `logs/delivery_risk.log`.
-- Rotação com limite de 10 MB por arquivo.
-- Até 30 arquivos de backup.
-- Codificação UTF-8.
-- Saída no terminal com formatação colorida utilizando Colorlog.
+O `APIClient` centraliza as chamadas HTTP e trata timeout, falha de conexão, erros HTTP, respostas JSON inválidas e respostas sem conteúdo HTTP 204. O timeout padrão das requisições é de 10 segundos.
 
-A pasta `logs/` é ignorada pelo Git.
+A URL da API pode ser configurada pela variável de ambiente `DELIVERYRISK_API_URL`. Na ausência dessa variável, o frontend utiliza `http://127.0.0.1:8000`.
 
-O módulo `backend/core/exception_handlers.py` concentra os handlers globais de exceção, padronizando as respostas de erro.
+## Como executar a aplicação completa
 
-Entre os tratamentos implementados estão:
+Execute os comandos a partir da raiz do projeto. Primeiro, crie e ative o ambiente virtual e instale as dependências, caso ainda não tenha feito isso:
 
-- HTTP 404 para recursos não encontrados.
-- HTTP 422 para erros de validação.
-- HTTP 500 para erros internos do servidor.
-
-## Endpoints implementados
-
-A API disponibiliza os seguintes endpoints:
-
-| Método | Endpoint | Descrição | Resposta esperada |
-|---|---|---|---|
-| GET | `/health` | Verifica a disponibilidade da aplicação e o carregamento do modelo. | 200 |
-| POST | `/predict` | Recebe os dados de um pedido, realiza a previsão e persiste o resultado. | 200 |
-| GET | `/predictions` | Lista o histórico de previsões. | 200 |
-| GET | `/predictions/{id}` | Consulta uma previsão pelo identificador. | 200 ou 404 |
-| DELETE | `/predictions/{id}` | Exclui uma previsão do histórico. | 204 ou 404 |
-| GET | `/metrics` | Retorna o relatório consolidado de métricas do modelo. | 200 |
-
-### Exemplos de respostas
-
-**Verificação de saúde — `GET /health`**
-
-```json
-{
-  "status": "healthy",
-  "model_loaded": true
-}
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 ```
 
-**Recurso não encontrado — HTTP 404**
+### Terminal 1 — API FastAPI
 
-```json
-{
-  "error": "Not Found",
-  "message": "Previsão não encontrada."
-}
-```
-
-**Erro de validação — HTTP 422**
-
-```json
-{
-  "error": "Validation Error",
-  "message": "Os dados enviados são inválidos."
-}
-```
-
-**Erro interno — HTTP 500**
-
-```json
-{
-  "error": "Internal Server Error",
-  "message": "Ocorreu um erro interno ao processar a solicitação."
-}
-```
-
-A documentação interativa disponibilizada pelo FastAPI apresenta os schemas completos de entrada e saída, além de permitir executar requisições diretamente pelo navegador.
-
-## Como executar a API
-
-Na raiz do projeto, com o ambiente virtual ativado e as dependências instaladas, execute:
+Com o ambiente virtual ativado:
 
 ```powershell
 uvicorn backend.main:app --reload
 ```
 
-A API será disponibilizada localmente em:
+A API ficará disponível em `http://127.0.0.1:8000`.
 
-`http://127.0.0.1:8000`
+### Terminal 2 — Interface Streamlit
 
-### Documentação interativa
-
-Swagger UI:
-
-`http://127.0.0.1:8000/docs`
-
-ReDoc:
-
-`http://127.0.0.1:8000/redoc`
-
-A documentação do Swagger permite visualizar os endpoints, consultar os schemas Pydantic, informar os dados de entrada e testar as requisições.
-
-### Verificação da API
-
-Com o servidor em execução, o endpoint de saúde pode ser acessado em:
-
-`http://127.0.0.1:8000/health`
-
-A resposta esperada quando a aplicação está inicializada e o modelo carregado é:
-
-```json
-{
-  "status": "healthy",
-  "model_loaded": true
-}
-```
-
-## Testes automatizados
-
-O projeto utiliza Pytest para validar os componentes do backend.
-
-Os testes estão organizados em duas categorias:
-
-**Testes unitários (`tests/unit/`)**
-
-Validam os componentes individualmente, incluindo:
-
-- Schemas Pydantic.
-- Serviço de previsão.
-- Repositório de previsões.
-- Serviço de métricas.
-
-**Testes de integração (`tests/integration/`)**
-
-Validam o comportamento dos endpoints e a integração entre os componentes da aplicação:
-
-- Health check.
-- Histórico de previsões.
-- Consulta de métricas.
-- Execução de previsões.
-
-### Executar os testes
-
-Na raiz do projeto:
+Abra outro terminal na raiz do projeto, ative o mesmo ambiente virtual e configure o `PYTHONPATH`:
 
 ```powershell
-python -m pytest
+.\.venv\Scripts\Activate.ps1
+$env:PYTHONPATH = "$PWD\frontend;$PWD"
+streamlit run frontend/streamlit_app.py
 ```
 
-Para executar os testes exibindo os avisos:
+A interface ficará disponível em `http://localhost:8501`.
+
+### Endereços locais
+
+| Serviço | Endereço |
+|---|---|
+| Frontend Streamlit | `http://localhost:8501` |
+| API FastAPI | `http://127.0.0.1:8000` |
+| Swagger UI | `http://127.0.0.1:8000/docs` |
+| ReDoc | `http://127.0.0.1:8000/redoc` |
+| Health check | `http://127.0.0.1:8000/health` |
+
+Para utilizar outro endereço de API, configure `DELIVERYRISK_API_URL` no terminal antes de iniciar o Streamlit. Exemplo no PowerShell:
 
 ```powershell
-python -m pytest -W default
+$env:DELIVERYRISK_API_URL = "http://127.0.0.1:8000"
 ```
 
-### Resultado da execução
+# Testes automatizados
 
-Na última execução, foram coletados e executados 33 testes.
+O projeto utiliza Pytest e organiza os testes por componente e tipo:
 
-```text
-===========================================================
-33 passed in 6.07s
-===========================================================
+- `tests/tests_backend/unit/`: testes unitários de schemas, serviços e repositório.
+- `tests/tests_backend/integration/`: testes de integração dos endpoints.
+- `tests/tests_frontend/unit/`: testes do cliente HTTP, formatadores e validadores.
+- `tests/tests_frontend/integration/`: testes de integração da comunicação com a API e das páginas Streamlit.
+
+Para executar a suíte completa na raiz do projeto:
+
+```powershell
+python -m pytest tests/ -v
 ```
 
-| Categoria | Testes aprovados |
-|---|---:|
-| Integração | 10 |
-| Unitários | 23 |
-| **Total** | **33** |
+**Última execução registrada durante o desenvolvimento:** 91 testes aprovados.
 
-Todos os testes foram aprovados na última execução registrada.
+A suíte cobre validação dos dados, serviços e persistência do backend, endpoints da API, tratamento de respostas HTTP, utilitários do frontend e renderização/comportamento das páginas Streamlit.
 
-## Limitações atuais do modelo
+# Dados e variável-alvo
 
-Embora a API esteja implementada e os testes automatizados tenham sido aprovados, o modelo utilizado apresenta limitações importantes.
+O projeto utiliza o **Brazilian E-Commerce Public Dataset by Olist**, composto pelos cinco arquivos utilizados no processamento:
 
-Na validação, o Random Forest apresentou:
+- `olist_orders_dataset.csv`
+- `olist_order_items_dataset.csv`
+- `olist_customers_dataset.csv`
+- `olist_products_dataset.csv`
+- `olist_sellers_dataset.csv`
 
-- F1-score de 27,66%.
-- ROC-AUC de 65,27%.
-
-No conjunto de teste, apresentou:
-
-- F1-score de 7,87%.
-- ROC-AUC de 42,66%.
-- Precisão de 4,64%.
-- Recall de 26,01%.
-
-A queda entre validação e teste demonstra dificuldade de generalização para o período mais recente.
-
-Portanto, a API disponibiliza um modelo experimental. A implementação técnica da previsão não deve ser confundida com a comprovação de desempenho adequado para utilização em produção.
-
-A evolução do modelo dependerá de novas investigações, experimentos e avaliações.
-
----
-
-# Variável-alvo
-
-A variável-alvo `delivery_delayed` identifica se um pedido foi entregue após a data estimada:
+A base integrada possui granularidade de pedido e contém 99.441 pedidos. A variável-alvo `delivery_delayed` é definida como:
 
 - `1`: pedido entregue depois da data estimada.
 - `0`: pedido entregue na data estimada ou antes dela.
 - Valor ausente: pedido sem informações suficientes para determinar a classificação.
 
-A variável foi construída na Etapa 2.2 utilizando as datas efetiva e estimada de entrega e passou por uma verificação independente, sem divergências nos registros elegíveis.
+A base contém 96.476 pedidos com classificação válida e 2.965 sem classificação. Os registros não classificáveis não são utilizados como exemplos rotulados no treinamento.
 
-A base integrada contém 96.476 pedidos com classificação válida e 2.965 pedidos sem classificação.
+O projeto utiliza 24 variáveis preditoras, com atributos numéricos e categóricos/booleanos. A seleção considera o cenário de previsão no momento da compra, evitando utilizar informações que só seriam conhecidas após a realização do pedido.
 
-Para prevenir vazamento de dados, o modelo utiliza atributos compatíveis com uma previsão realizada no momento da compra. Informações que só ficam disponíveis depois da compra não devem ser utilizadas como preditores.
+# Modelo e resultados
 
-Os pedidos sem classificação foram excluídos da base elegível utilizada na preparação para modelagem, conforme os critérios definidos no projeto.
+O modelo selecionado na validação foi o **Random Forest — Experimento 4**, com os seguintes hiperparâmetros:
 
-# Controle de versão
+```python
+{
+    "n_estimators": 100,
+    "max_depth": 10,
+    "class_weight": "balanced"
+}
+```
 
-O projeto utiliza Git para controle de versão e organização do desenvolvimento por branches.
+O critério de seleção foi o maior F1-score no conjunto de validação. O limiar de classificação utilizado na avaliação foi 0,50.
 
-Branches definidas:
+| Métrica | Validação | Teste |
+|---|---:|---:|
+| Acurácia | 68,10% | 66,66% |
+| Precisão | 18,85% | 4,64% |
+| Recall | 51,93% | 26,01% |
+| F1-score | 27,66% | 7,87% |
+| ROC-AUC | 65,27% | 42,66% |
 
-- `main`
-- `develop`
-- `feature/Estrutura_do_projeto`
-- `feature/Preparacao_de_dados`
-- `feature/Ml-pipeline`
-- `feature/Backend`
-- `feature/Frontend`
-- `Feature/Documentacao`
+O conjunto de teste contém 18.603 registros do período de 1º de junho a 29 de agosto de 2018. Nele, foram observados 12.135 verdadeiros negativos, 5.449 falsos positivos, 754 falsos negativos e 265 verdadeiros positivos.
 
-As mensagens de commit seguem a convenção Conventional Commits, com tipos como `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `style` e `perf`.
+A avaliação temporal também identificou variação de desempenho entre três períodos consecutivos do conjunto de teste. A taxa de atraso aumentou de 1,34% para 10,37%, enquanto o recall diminuiu de 62,65% para 15,09%.
 
-A branch ativa e o estado atual do repositório devem ser verificados antes de realizar operações Git.
+**Limitação importante:** os resultados demonstram queda relevante entre validação e teste, baixa precisão e dificuldade de generalização temporal. O modelo deve ser interpretado como experimental e acadêmico. A implementação da API e da interface não significa que o desempenho preditivo seja adequado para uso operacional ou produção.
 
-# Status atual
+## Artefatos gerados
+
+| Arquivo/diretório | Conteúdo |
+|---|---|
+| `data/processed/base_integrada.parquet` | Base integrada utilizada no pipeline. |
+| `models/delivery_risk_pipeline.joblib` | Pipeline completo serializado com Joblib. |
+| `reports/metrics.json` | Métricas de validação, teste, análise de erros, robustez temporal e serialização. |
+| `reports/metrics/` | Relatórios tabulares de comparação dos experimentos e desempenho computacional. |
+| `images/eda/` | Visualizações da análise exploratória. |
+| `images/matrizes_de_confusao/` | Matrizes de confusão dos modelos avaliados. |
+| `images/avaliacao_modelos/` | Gráficos complementares da avaliação. |
+| `data/delivery_risk.db` | Banco SQLite utilizado para armazenar o histórico de previsões. |
+
+# Status do projeto
 
 ## Fase 1 — Estruturação inicial
 
-- [x] Criação da estrutura inicial de diretórios e arquivos.
-- [x] Configuração do ambiente virtual Python.
-- [x] Definição e registro das dependências em `requirements.txt`.
-- [x] Configuração do kernel do Jupyter Notebook.
-- [x] Configuração inicial do `.gitignore`.
-- [x] Documentação inicial do projeto no `README.md`.
+- [x] Criação da estrutura de diretórios.
+- [x] Configuração do ambiente virtual e dependências.
+- [x] Configuração do Jupyter Notebook e kernel.
+- [x] Configuração inicial do Git e `.gitignore`.
+- [x] Documentação inicial do projeto.
 
 ## Fase 2 — Pipeline de Machine Learning
 
-- [x] **Etapa 2.1:** carregamento, diagnóstico e análise exploratória dos dados.
-- [x] **Etapa 2.2:** tratamento e integração dos dados, com construção da variável-alvo.
-- [x] **Etapa 2.3:** pré-processamento e engenharia de atributos.
-- [x] **Etapa 2.4:** divisão dos dados em treino, validação e teste.
-- [x] **Etapa 2.5:** treinamento e ajuste dos modelos.
-- [x] **Etapa 2.6:** avaliação comparativa e análise do custo computacional.
-- [x] **Etapa 2.7:** avaliação final, análise de erros, generalização, robustez temporal e serialização do pipeline.
+- [x] Etapa 2.1 — Carregamento, diagnóstico e análise exploratória.
+- [x] Etapa 2.2 — Tratamento e integração dos dados e construção da variável-alvo.
+- [x] Etapa 2.3 — Pré-processamento e engenharia de atributos.
+- [x] Etapa 2.4 — Divisão temporal entre treino, validação e teste.
+- [x] Etapa 2.5 — Treinamento e ajuste dos modelos.
+- [x] Etapa 2.6 — Avaliação comparativa e análise do custo computacional.
+- [x] Etapa 2.7 — Avaliação final, análise de erros, robustez temporal e serialização.
 
 ## Fase 3 — API com FastAPI
 
-- [x] Organização modular do backend em camadas.
-- [x] Implementação dos schemas Pydantic.
-- [x] Implementação do serviço de previsão.
-- [x] Carregamento do pipeline durante a inicialização com `lifespan`.
-- [x] Implementação do endpoint de saúde.
-- [x] Implementação do endpoint de previsão.
-- [x] Implementação da persistência do histórico com SQLite.
-- [x] Implementação dos endpoints de consulta e exclusão do histórico.
-- [x] Implementação do endpoint de métricas.
-- [x] Implementação do logging e tratamento global de exceções.
-- [x] Execução e aprovação dos testes automatizados (33 testes).
+- [x] Arquitetura modular em camadas.
+- [x] Schemas Pydantic e validação de entrada/saída.
+- [x] Carregamento do pipeline no ciclo de vida da aplicação.
+- [x] Endpoints de saúde, previsão, histórico e métricas.
+- [x] Persistência do histórico com SQLite.
+- [x] Logging e tratamento global de exceções.
+- [x] Testes unitários e de integração.
 
 ## Fase 4 — Frontend com Streamlit
 
-- [ ] Implementar a interface web.
-- [ ] Desenvolver a comunicação entre Streamlit e FastAPI.
-- [ ] Criar a apresentação das previsões.
-- [ ] Criar a visualização do histórico.
-- [ ] Integrar a apresentação das métricas do modelo.
-- [ ] Validar o funcionamento integrado da aplicação.
+- [x] Página Visão geral.
+- [x] Página Nova previsão.
+- [x] Página Histórico.
+- [x] Cliente HTTP centralizado para comunicação com a API.
+- [x] Exibição de resultados, indicadores e gráficos.
+- [x] Consulta detalhada e exclusão de previsões.
+- [x] Testes unitários e de integração.
+- [x] Validação da execução integrada com a API.
 
 ## Documentação e entrega
 
-- [x] Documentação da estrutura do backend.
-- [x] Documentação dos endpoints implementados.
-- [x] Instruções de instalação e execução da API.
+- [x] Documentação das etapas do pipeline no README.
+- [x] Documentação da arquitetura e dos endpoints implementados no README.
+- [x] Instruções de instalação e execução do backend e frontend.
 - [x] Registro das dependências.
 - [x] Registro dos resultados dos testes automatizados.
-- [ ] Documentação completa da interface web.
 - [ ] Gravação e disponibilização do vídeo de demonstração.
 - [ ] Definição da licença do projeto.
 
-# Próximas etapas
-
-Com a conclusão do pipeline de Machine Learning e da implementação do backend, as próximas atividades serão dedicadas ao desenvolvimento e à integração da interface web.
-
-As atividades previstas incluem:
-
-1. Desenvolver a interface web com Streamlit.
-2. Implementar a comunicação entre o frontend e a API FastAPI.
-3. Apresentar as previsões e probabilidades retornadas pela API.
-4. Disponibilizar a consulta do histórico de previsões.
-5. Apresentar as métricas e limitações do modelo.
-6. Executar testes da aplicação integrada.
-7. Completar a documentação técnica e de utilização.
-8. Gravar o vídeo de demonstração e disponibilizá-lo para entrega.
-
-O desempenho observado no conjunto de teste deverá ser considerado durante o desenvolvimento, pois foram identificadas limitações relevantes na capacidade preditiva do modelo.
-
 # Licença
 
-A licença do projeto será definida posteriormente.
+A licença do projeto ainda não foi definida.
