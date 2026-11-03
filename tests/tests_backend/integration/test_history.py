@@ -1,4 +1,4 @@
-from tests.conftest import create_valid_payload
+from tests.tests_backend.conftest import create_valid_payload
 
 def test_list_predictions(client):
     client.post("/predict", json=create_valid_payload())

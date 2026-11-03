@@ -6,7 +6,7 @@ from backend.main import app
 from backend.dependencies import get_pipeline
 import backend.database.connection as db_connection
 from backend.database.models import create_predictions_table
-from tests.conftest import create_valid_payload
+from tests.tests_backend.conftest import create_valid_payload
 
 
 def test_create_prediction(client):
